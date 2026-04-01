@@ -94,15 +94,15 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Login with profile id + PIN
-  const login = async (userId, pin) => {
-    const user = users.find((u) => u.id === userId);
-    if (!user) return false;
+  // Login with display name + PIN
+  const login = async (name, pin) => {
+    const user = users.find((u) => u.name.toLowerCase() === name.trim().toLowerCase());
+    if (!user) return { ok: false, error: "No account found with that name" };
     try {
       await signInWithEmailAndPassword(auth, user.email, toPassword(pin));
-      return true;
+      return { ok: true };
     } catch {
-      return false;
+      return { ok: false, error: "Wrong PIN. Try again." };
     }
   };
 

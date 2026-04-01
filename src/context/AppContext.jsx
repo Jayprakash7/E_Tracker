@@ -39,7 +39,17 @@ export function AppProvider({ children, userId }) {
 
     const unsubExp = onSnapshot(
       collection(db, 'users', userId, 'expenses'),
-      (snap) => setExpenses(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+      (snap) => {
+        const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        // Sort: newest date first; within same date, latest createdAt first
+        list.sort((a, b) => {
+          if (b.date !== a.date) return b.date.localeCompare(a.date);
+          const ta = a.createdAt || '';
+          const tb = b.createdAt || '';
+          return tb.localeCompare(ta);
+        });
+        setExpenses(list);
+      }
     );
     const unsubCat = onSnapshot(
       collection(db, 'users', userId, 'categories'),

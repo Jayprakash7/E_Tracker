@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend,
+  PieChart, Pie, Cell,
 } from 'recharts';
 import { TrendingUp, ArrowUpRight, Calendar, ShoppingBag } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -139,32 +139,50 @@ export default function Dashboard() {
         </div>
 
         {/* Category Breakdown */}
-        <div className="card chart-card">
+        <div className="card chart-card dash-pie-card">
           <h2 className="card-title">This Month by Category</h2>
           {categoryTotals.length === 0 ? (
             <div className="empty-chart">No expenses this month</div>
           ) : (
-            <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie
-                  data={categoryTotals}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  dataKey="total"
-                  nameKey="name"
-                  label={({ name, percent }) =>
-                    `${name.split(' ')[0]} ${(percent * 100).toFixed(0)}%`
-                  }
-                  labelLine={false}
-                >
-                  {categoryTotals.map((cat) => (
-                    <Cell key={cat.id} fill={cat.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(v) => formatCurrency(v)} />
-              </PieChart>
-            </ResponsiveContainer>
+            <div className="dash-pie-wrap">
+              <ResponsiveContainer width="100%" height={170}>
+                <PieChart>
+                  <Pie
+                    data={categoryTotals}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={75}
+                    innerRadius={38}
+                    dataKey="total"
+                    paddingAngle={2}
+                    strokeWidth={0}
+                  >
+                    {categoryTotals.map((cat) => (
+                      <Cell key={cat.id} fill={cat.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(v, name) => [formatCurrency(v), name]}
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: 'none', boxShadow: '0 2px 12px rgba(0,0,0,.12)' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+
+              {/* Custom legend grid */}
+              <div className="dash-pie-legend">
+                {categoryTotals.map((cat) => {
+                  const pct = monthTotal > 0 ? ((cat.total / monthTotal) * 100).toFixed(0) : 0;
+                  return (
+                    <div key={cat.id} className="dash-pie-leg-item">
+                      <span className="dash-pie-leg-dot" style={{ background: cat.color }} />
+                      <span className="dash-pie-leg-icon">{cat.icon}</span>
+                      <span className="dash-pie-leg-name">{cat.name}</span>
+                      <span className="dash-pie-leg-pct" style={{ color: cat.color }}>{pct}%</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           )}
         </div>
       </div>

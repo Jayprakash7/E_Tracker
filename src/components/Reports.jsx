@@ -3,6 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend,
 } from 'recharts';
+import { Wallet, TrendingUp, Tag, Percent } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import {
   formatCurrency,
@@ -56,13 +57,12 @@ export default function Reports() {
 
   return (
     <div className="page">
-      <div className="page-header">
+      <div className="reports-header">
         <div>
           <h1 className="page-title">Reports</h1>
           <p className="page-subtitle">Spending analysis & insights</p>
         </div>
-        {/* Month selector */}
-        <div className="filters-group">
+        <div className="filters-group reports-filters">
           <select
             className="form-input filter-select"
             value={selectedMonth}
@@ -87,28 +87,40 @@ export default function Reports() {
       {/* Summary cards */}
       <div className="stats-grid stats-grid--4">
         <div className="stat-card stat-card--primary">
-          <p className="stat-label">Total Spending</p>
-          <p className="stat-value">{formatCurrency(monthTotal)}</p>
-          <p className="stat-meta">{monthExpenses.length} transactions</p>
+          <div className="stat-icon"><Wallet size={20} /></div>
+          <div className="stat-content">
+            <p className="stat-label">Total Spending</p>
+            <p className="stat-value">{formatCurrency(monthTotal)}</p>
+            <p className="stat-meta">{monthExpenses.length} transactions</p>
+          </div>
         </div>
         <div className="stat-card stat-card--orange">
-          <p className="stat-label">Daily Average</p>
-          <p className="stat-value">{formatCurrency(avgDaily)}</p>
-          <p className="stat-meta">per day</p>
+          <div className="stat-icon"><TrendingUp size={20} /></div>
+          <div className="stat-content">
+            <p className="stat-label">Daily Average</p>
+            <p className="stat-value">{formatCurrency(avgDaily)}</p>
+            <p className="stat-meta">per day</p>
+          </div>
         </div>
         <div className="stat-card stat-card--green">
-          <p className="stat-label">Top Category</p>
-          <p className="stat-value stat-value--sm">
-            {topCategory ? topCategory.icon + ' ' + topCategory.name : '—'}
-          </p>
-          <p className="stat-meta">
-            {topCategory ? formatCurrency(topCategory.total) : 'No data'}
-          </p>
+          <div className="stat-icon"><Tag size={20} /></div>
+          <div className="stat-content">
+            <p className="stat-label">Top Category</p>
+            <p className="stat-value stat-value--sm">
+              {topCategory ? topCategory.icon + ' ' + topCategory.name : '—'}
+            </p>
+            <p className="stat-meta">
+              {topCategory ? formatCurrency(topCategory.total) : 'No data'}
+            </p>
+          </div>
         </div>
         <div className="stat-card stat-card--purple">
-          <p className="stat-label">% of All Time</p>
-          <p className="stat-value">{totalMonthPercent}%</p>
-          <p className="stat-meta">of total spending</p>
+          <div className="stat-icon"><Percent size={20} /></div>
+          <div className="stat-content">
+            <p className="stat-label">% of All Time</p>
+            <p className="stat-value">{totalMonthPercent}%</p>
+            <p className="stat-meta">of total spending</p>
+          </div>
         </div>
       </div>
 
@@ -120,9 +132,9 @@ export default function Reports() {
         {monthTotal === 0 ? (
           <div className="empty-chart">No expenses this month</div>
         ) : (
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={dailyData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-              <XAxis dataKey="day" tick={{ fontSize: 11 }} interval={1} />
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={dailyData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
+              <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={2} />
               <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => v === 0 ? '' : `₹${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`} />
               <Tooltip formatter={(v) => formatCurrency(v)} labelFormatter={(l) => `Day ${l}`} />
               <Bar dataKey="amount" fill="#6366f1" radius={[3, 3, 0, 0]} />
@@ -138,7 +150,7 @@ export default function Reports() {
           {categoryTotals.length === 0 ? (
             <div className="empty-chart">No data</div>
           ) : (
-            <ResponsiveContainer width="100%" height={240}>
+            <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie
                   data={categoryTotals}
@@ -171,23 +183,19 @@ export default function Reports() {
                 const pct = monthTotal > 0 ? ((cat.total / monthTotal) * 100).toFixed(1) : 0;
                 return (
                   <div key={cat.id} className="cat-row">
-                    <div className="cat-row-left">
-                      <span
-                        className="cat-dot"
-                        style={{ background: cat.color }}
-                      />
-                      <span className="cat-icon">{cat.icon}</span>
-                      <span className="cat-name">{cat.name}</span>
-                    </div>
-                    <div className="cat-row-right">
-                      <div className="cat-bar-wrap">
-                        <div
-                          className="cat-bar"
-                          style={{ width: `${pct}%`, background: cat.color }}
-                        />
+                    <div className="cat-row-top">
+                      <div className="cat-row-left">
+                        <span className="cat-dot" style={{ background: cat.color }} />
+                        <span className="cat-icon">{cat.icon}</span>
+                        <span className="cat-name">{cat.name}</span>
                       </div>
-                      <span className="cat-pct">{pct}%</span>
-                      <span className="cat-amount">{formatCurrency(cat.total)}</span>
+                      <div className="cat-row-meta">
+                        <span className="cat-pct">{pct}%</span>
+                        <span className="cat-amount">{formatCurrency(cat.total)}</span>
+                      </div>
+                    </div>
+                    <div className="cat-bar-wrap">
+                      <div className="cat-bar" style={{ width: `${pct}%`, background: cat.color }} />
                     </div>
                   </div>
                 );
@@ -200,8 +208,8 @@ export default function Reports() {
       {/* 12-month trend */}
       <div className="card chart-card chart-card--full">
         <h2 className="card-title">12-Month Spending Trend</h2>
-        <ResponsiveContainer width="100%" height={240}>
-          <LineChart data={yearlyTrend} margin={{ top: 5, right: 15, left: 0, bottom: 5 }}>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={yearlyTrend} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
             <XAxis dataKey="month" tick={{ fontSize: 12 }} />
             <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₹${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`} />
