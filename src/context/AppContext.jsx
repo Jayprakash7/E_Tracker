@@ -1,36 +1,32 @@
 ﻿import { createContext, useContext, useState, useEffect } from 'react';
 import {
   collection, doc, addDoc, updateDoc, deleteDoc,
-  onSnapshot, setDoc, getDocs,
+  onSnapshot, setDoc,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const AppContext = createContext(null);
 
 export const DEFAULT_CATEGORIES = [
-  { id: 'cat1', name: 'Food & Dining',     color: '#f59e0b', icon: 'ðŸ”' },
-  { id: 'cat2', name: 'Transport',          color: '#3b82f6', icon: 'ðŸš—' },
-  { id: 'cat3', name: 'Shopping',           color: '#ec4899', icon: 'ðŸ›ï¸' },
-  { id: 'cat4', name: 'Bills & Utilities',  color: '#8b5cf6', icon: 'ðŸ’¡' },
-  { id: 'cat5', name: 'Health & Medical',   color: '#22c55e', icon: 'ðŸ’Š' },
-  { id: 'cat6', name: 'Entertainment',      color: '#ef4444', icon: 'ðŸŽ¬' },
-  { id: 'cat7', name: 'Education',          color: '#06b6d4', icon: 'ðŸ“š' },
-  { id: 'cat8', name: 'Other',              color: '#64748b', icon: 'ðŸ“¦' },
+  { id: 'cat1', name: 'Food & Dining',    color: '#f59e0b', icon: '\u{1F354}' },
+  { id: 'cat2', name: 'Transport',         color: '#3b82f6', icon: '\u{1F697}' },
+  { id: 'cat3', name: 'Shopping',          color: '#ec4899', icon: '\u{1F6CD}' },
+  { id: 'cat4', name: 'Bills & Utilities', color: '#8b5cf6', icon: '\u{1F4A1}' },
+  { id: 'cat5', name: 'Health & Medical',  color: '#22c55e', icon: '\u{1F48A}' },
+  { id: 'cat6', name: 'Entertainment',     color: '#ef4444', icon: '\u{1F3AC}' },
+  { id: 'cat7', name: 'Education',         color: '#06b6d4', icon: '\u{1F4DA}' },
+  { id: 'cat8', name: 'Other',             color: '#64748b', icon: '\u{1F4E6}' },
 ];
 
-// Seed default categories if the user has none yet
+// Seed default categories — always overwrites to fix any corrupted icons
 async function seedCategories(userId) {
-  const col = collection(db, 'users', userId, 'categories');
-  const snap = await getDocs(col);
-  if (snap.empty) {
-    await Promise.all(
-      DEFAULT_CATEGORIES.map((cat) =>
-        setDoc(doc(db, 'users', userId, 'categories', cat.id), {
-          name: cat.name, color: cat.color, icon: cat.icon,
-        })
-      )
-    );
-  }
+  await Promise.all(
+    DEFAULT_CATEGORIES.map((cat) =>
+      setDoc(doc(db, 'users', userId, 'categories', cat.id), {
+        name: cat.name, color: cat.color, icon: cat.icon,
+      }, { merge: true })
+    )
+  );
 }
 
 export function AppProvider({ children, userId }) {
