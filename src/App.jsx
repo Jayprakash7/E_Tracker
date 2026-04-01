@@ -14,6 +14,8 @@ import LoginPage from './components/LoginPage';
 function AppContent() {
   const { currentUser } = useAuth();
 
+  // currentUser === undefined means Firebase is still resolving auth state
+  // (loading spinner is shown inside AuthProvider itself)
   if (!currentUser) {
     return <LoginPage />;
   }

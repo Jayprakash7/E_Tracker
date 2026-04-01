@@ -31,8 +31,8 @@ export default function LoginPage() {
     const newPin = pin + digit;
     setPin(newPin); setError("");
     if (newPin.length === 4) {
-      setTimeout(() => {
-        const ok = login(selectedUser.id, newPin);
+      setTimeout(async () => {
+        const ok = await login(selectedUser.id, newPin);
         if (!ok) { doShake(); setError("Wrong PIN. Try again."); setPin(""); }
       }, 120);
     }
@@ -43,7 +43,7 @@ export default function LoginPage() {
     const newPin = pin + digit;
     setPin(newPin); setError("");
     if (newPin.length === 4) {
-      setTimeout(() => {
+      setTimeout(async () => {
         if (createStep === "pin1") {
           setConfirmPin(newPin); setPin(""); setCreateStep("pin2");
         } else {
@@ -51,7 +51,7 @@ export default function LoginPage() {
             doShake(); setError("PINs did not match. Start again.");
             setPin(""); setConfirmPin(""); setCreateStep("pin1");
           } else {
-            const result = register(newName.trim(), newPin);
+            const result = await register(newName.trim(), newPin);
             if (!result.ok) { setError(result.error); setPin(""); setCreateStep("pin1"); }
           }
         }
