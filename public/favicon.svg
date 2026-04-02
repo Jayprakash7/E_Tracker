@@ -1,4 +1,80 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="8" fill="#6366f1"/>
-  <text x="8" y="23" font-size="18" fill="white">₹</text>
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" shape-rendering="geometricPrecision">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#0f0c29"/>
+      <stop offset="55%"  stop-color="#302b63"/>
+      <stop offset="100%" stop-color="#24243e"/>
+    </linearGradient>
+    <linearGradient id="walletGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="flapGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+    <radialGradient id="coinGrad" cx="38%" cy="30%" r="65%">
+      <stop offset="0%"   stop-color="#fff8dc"/>
+      <stop offset="40%"  stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </radialGradient>
+    <radialGradient id="coinShine" cx="35%" cy="28%" r="55%">
+      <stop offset="0%"   stop-color="white" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="white" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="walletShadow" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="22" flood-color="#000" flood-opacity="0.55"/>
+    </filter>
+    <filter id="coinShadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="114" fill="url(#bgGrad)"/>
+  <rect width="512" height="240" rx="114" fill="url(#gloss)"/>
+  <circle cx="430" cy="82" r="100" fill="#6366f1" opacity="0.10"/>
+
+  <rect x="82" y="168" width="348" height="230" rx="36"
+        fill="url(#walletGrad)" filter="url(#walletShadow)"/>
+  <rect x="82" y="168" width="348" height="115" rx="36" fill="white" opacity="0.07"/>
+  <rect x="82" y="370" width="348" height="28" rx="0"
+        fill="#1e1b4b" opacity="0.18"
+        style="clip-path:inset(0 0 0 0 round 0 0 36px 36px)"/>
+
+  <line x1="116" y1="240" x2="320" y2="240" stroke="white" stroke-width="5"
+        stroke-linecap="round" opacity="0.22"/>
+  <line x1="116" y1="272" x2="280" y2="272" stroke="white" stroke-width="5"
+        stroke-linecap="round" opacity="0.15"/>
+
+  <rect x="338" y="198" width="92" height="120" rx="24"
+        fill="#3730a3" opacity="0.85"/>
+  <rect x="346" y="206" width="76" height="104" rx="18"
+        fill="#4338ca" opacity="0.60"/>
+  <circle cx="384" cy="258" r="10" fill="#1e1b4b" opacity="0.40"/>
+  <circle cx="384" cy="258" r="6"  fill="#818cf8" opacity="0.70"/>
+
+  <circle cx="362" cy="350" r="82" fill="url(#coinGrad)" filter="url(#coinShadow)"/>
+  <circle cx="362" cy="350" r="82" fill="url(#coinShine)"/>
+  <circle cx="362" cy="350" r="70" fill="none" stroke="white"
+          stroke-width="2.5" opacity="0.30"/>
+  <circle cx="362" cy="350" r="80" fill="none" stroke="#92400e"
+          stroke-width="2" opacity="0.35"/>
+
+  <text x="362" y="350"
+        text-anchor="middle"
+        dominant-baseline="central"
+        font-size="88"
+        font-weight="900"
+        font-family="'Arial Black','Noto Sans',Arial,sans-serif"
+        fill="white"
+        opacity="0.97">&#x20B9;</text>
+
+  <polygon points="130,118  134,130  146,130  137,138  140,150  130,143  120,150  123,138  114,130  126,130"
+           fill="#fbbf24" opacity="0.85"/>
+  <polygon points="172,98  174,105  181,105  176,109  178,116  172,112  166,116  168,109  163,105  170,105"
+           fill="white" opacity="0.45"/>
 </svg>

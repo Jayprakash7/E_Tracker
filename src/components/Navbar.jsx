@@ -10,8 +10,11 @@ import {
   Plus,
   LogOut,
   Users,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 // Desktop sidebar — all pages
 const DESKTOP_NAV = [
@@ -34,6 +37,7 @@ const MOBILE_NAV = [
 
 export default function Navbar() {
   const { currentUser, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
 
   return (
     <>
@@ -51,6 +55,9 @@ export default function Navbar() {
             {currentUser.initials}
           </div>
           <span className="mobile-user-name">{currentUser.name}</span>
+          <button className="icon-btn theme-toggle" onClick={toggleTheme} title={isDark ? 'Light mode' : 'Dark mode'}>
+            {isDark ? <Sun size={17} /> : <Moon size={17} />}
+          </button>
           <button className="icon-btn topbar-logout" onClick={logout} title="Logout">
             <LogOut size={17} />
           </button>
@@ -89,6 +96,9 @@ export default function Navbar() {
             <p className="sidebar-user-name">{currentUser.name}</p>
             <p className="sidebar-user-role">My Account</p>
           </div>
+          <button className="icon-btn theme-toggle" onClick={toggleTheme} title={isDark ? 'Light mode' : 'Dark mode'}>
+            {isDark ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
           <button className="icon-btn icon-btn--logout" onClick={logout} title="Logout">
             <LogOut size={16} />
           </button>
