@@ -16,7 +16,7 @@ const YEARS = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
 
 export default function ExpenseList() {
   const { expenses, categories, getCategoryById, deleteExpense } = useApp();
-  const { splits } = useSplit();
+  const { splits, deleteSplit } = useSplit();
   const hasSplit = (expenseId) => splits.some(s => s.expenseId === expenseId);
 
   const now = new Date();
@@ -52,6 +52,9 @@ export default function ExpenseList() {
 
   const handleDelete = (id) => {
     deleteExpense(id);
+    // also remove the linked split so settlements don't linger
+    const linkedSplit = splits.find(s => s.expenseId === id);
+    if (linkedSplit) deleteSplit(linkedSplit.id);
     setConfirmDelete(null);
   };
 

@@ -236,7 +236,16 @@ export default function SplitsPage() {
                       <p className="split-card-title">{split.expenseTitle}</p>
                       <p className="split-card-meta">{formatDate(split.expenseDate)}</p>
                     </div>
-                    <span className="settled-badge">✓ Settled</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span className="settled-badge">✓ Settled</span>
+                      <button
+                        className="icon-btn icon-btn--delete"
+                        onClick={() => setConfirmDeleteSplit(split.id)}
+                        title="Delete split"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </div>
                   <div className="split-entries">
                     {split.entries.map(entry => (
