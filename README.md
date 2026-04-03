@@ -1,6 +1,16 @@
-# 💼 E-Tracker — Personal Expense Tracker
+﻿# 💼 E-Tracker — Personal Expense Tracker
 
-A professional personal finance tracking app built with **React + Firebase**. Track your expenses, split bills with friends, monitor what you've actually spent from your own pocket, and see who owes you money — all in one place.
+<div align="center">
+
+![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Firebase](https://img.shields.io/badge/Firebase-Firestore-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-Build-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Vercel](https://img.shields.io/badge/Deployed-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)
+
+**A professional personal finance tracking app — track expenses, split bills, monitor your actual pocket spend, and see who owes you money. All in one place. All in real-time.**
+
+</div>
 
 ---
 
@@ -23,29 +33,37 @@ A professional personal finance tracking app built with **React + Firebase**. Tr
 
 ## ✨ Features
 
-| Feature | Description |
-|---|---|
-| 🔐 **Secure Login** | PIN-based authentication per user |
-| 💸 **Expense Tracking** | Add, edit, delete expenses with categories |
-| 🤝 **Bill Splitting** | Split any expense among multiple people with custom shares |
-| 👤 **My Spend** | See only what YOU paid after deducting others' shares |
-| 💰 **Money Received** | Track payments received — Today / This Week / This Month / All Time |
-| 📊 **Personal Reports** | All charts and summaries show YOUR actual spend, not group totals |
-| 🌙 **Dark / Light Mode** | Toggle between themes, preference saved automatically |
-| 📱 **PWA** | Install on your phone home screen like a native app |
-| ☁️ **Cloud Sync** | All data stored in Firebase — works across devices |
+<div align="center">
+
+| 🔐 Secure Login | 💸 Expense Tracking | 🤝 Bill Splitting |
+|:---:|:---:|:---:|
+| PIN-based auth per user | Add, edit, delete with categories | Custom shares per person |
+| **👤 My Spend** | **💰 Money Received** | **📊 Personal Reports** |
+| Only YOUR pocket money | Today / Week / Month / All Time | Splits excluded from all charts |
+| **🌙 Dark / Light Mode** | **📱 PWA Ready** | **☁️ Cloud Sync** |
+| Theme saved automatically | Install like a native app | Firebase real-time across devices |
+
+</div>
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Frontend** — React 18, React Router DOM v6
-- **Charts** — Recharts
-- **Icons** — Lucide React
-- **Backend / DB** — Firebase Firestore (real-time)
-- **Auth** — Firebase Auth
-- **Build Tool** — Vite
-- **Hosting** — Vercel
+<div align="center">
+
+![React](https://skillicons.dev/icons?i=react,firebase,vite,js,html,css)
+
+</div>
+
+| Layer | Technology |
+|---|---|
+| **Frontend** | React 18, React Router DOM v6 |
+| **Charts** | Recharts |
+| **Icons** | Lucide React |
+| **Backend / DB** | Firebase Firestore (real-time) |
+| **Auth** | Firebase Authentication |
+| **Build Tool** | Vite |
+| **Hosting** | Vercel |
 
 ---
 
@@ -108,13 +126,18 @@ Use this when you paid for a group and others need to pay you back.
 6. Save the expense — the split is linked and tracked
 
 **Example:**
+
 ```
-Dinner Bill = ₹228
-  Rahul  → ₹68
-  Priya  → ₹68
-  Amit   → ₹43
-  ─────────────
-  My share = ₹49  ✓
+┌─────────────────────────────────────┐
+│         Restaurant Bill             │
+│         Total = ₹5,000              │
+├─────────────────────────────────────┤
+│  Kirti    →  ₹1,000                 │
+│  Amitabh  →  ₹1,000                 │
+│  Pritam   →  ₹1,000                 │
+│  ─────────────────────              │
+│  My Share =  ₹2,000  ✓             │
+└─────────────────────────────────────┘
 ```
 
 > ⚠️ Always use the split toggle when adding — do not add the split separately after saving, or the link may break.
@@ -255,32 +278,33 @@ src/
 
 ---
 
-## �‍💻 Author
 
-<table>
-  <tr>
-    <td align="center">
-      <a href="https://github.com/Jayprakash7">
-        <img src="https://github.com/Jayprakash7.png" width="100px" style="border-radius:50%" alt="Jayaprakash Biswal"/><br/>
-        <strong>Jayaprakash Biswal</strong>
-      </a>
-      <br/>
-      💼 Full Stack Java Developer @ Cozentus Technologies<br/>
-      🎓 B.Tech — Computer Science & Engineering<br/>
-      🏆 Multiple Hackathon Winner<br/>
-      ✍️ Technical Content Writer
-    </td>
-  </tr>
-</table>
+## Author
+
+<div align="center">
+
+<img src="https://github.com/Jayprakash7.png" width="120px"/>
+
+### Jayaprakash Biswal
+
+[![GitHub](https://img.shields.io/badge/GitHub-Jayprakash7-181717?style=for-the-badge&logo=github)](https://github.com/Jayprakash7)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/jayaprakash-biswal-9918b1257)
+[![Hashnode](https://img.shields.io/badge/Hashnode-Blog-2962FF?style=for-the-badge&logo=hashnode)](https://hashnode.com/@Jayprakash777)
 
 | | |
-|---|---|
-| 🐙 **GitHub** | [@Jayprakash7](https://github.com/Jayprakash7) |
-| 💼 **LinkedIn** | [jayaprakash-biswal](https://www.linkedin.com/in/jayaprakash-biswal-9918b1257) |
-| ✍️ **Hashnode** | [@Jayprakash777](https://hashnode.com/@Jayprakash777) |
+|:---:|:---:|
+| Role | Full Stack Java Developer @ Cozentus Technologies |
+| Education | B.Tech — Computer Science & Engineering |
+| Achievements | NIRMAN 3.0 Winner  IC Hack 2.0 Finalist  Trithon 2023 Winner |
+| Content | Technical Writer on Hashnode |
+| Exploring | Spring Boot  AWS  Docker  Generative AI |
+
+> *"Building scalable, impactful solutions — one commit at a time."*
+
+</div>
 
 ---
 
-## �📄 License
+## License
 
 Private project — all rights reserved.
