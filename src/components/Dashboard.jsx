@@ -1,10 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell,
 } from 'recharts';
-import { TrendingUp, ArrowUpRight, Calendar, ShoppingBag } from 'lucide-react';
+import { TrendingUp, ArrowUpRight, Calendar, Wallet, HandCoins, Receipt, CheckCircle2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useSplit } from '../context/SplitContext';
 import {
@@ -15,16 +15,21 @@ import {
   getTotalAmount,
   getCategoryTotals,
   getMonthlyTotals,
+  getPersonalTotal,
+  getPersonalAmount,
+  getAllSettlements,
+  getReceivedInRange,
+  todayString,
 } from '../utils/helpers';
 
 export default function Dashboard() {
   const { expenses, categories, getCategoryById } = useApp();
-  const { people, getTotalOutstanding, getPersonOutstanding, getPersonBalance } = useSplit();
+  const { people, splits, getTotalOutstanding, getPersonOutstanding, getPersonBalance } = useSplit();
 
   const now = new Date();
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
-  const todayStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const todayStr = todayString();
 
   const monthExpenses = useMemo(
     () => getMonthExpenses(expenses, currentMonth, currentYear),
@@ -38,6 +43,10 @@ export default function Dashboard() {
 
   const monthTotal = useMemo(() => getTotalAmount(monthExpenses), [monthExpenses]);
   const todayTotal = useMemo(() => getTotalAmount(todayExpenses), [todayExpenses]);
+  const myMonthSpend = useMemo(
+    () => getPersonalTotal(monthExpenses, splits),
+    [monthExpenses, splits]
+  );
 
   const categoryTotals = useMemo(
     () => getCategoryTotals(monthExpenses, categories),
@@ -52,6 +61,34 @@ export default function Dashboard() {
   );
 
   const topCategory = categoryTotals[0];
+
+  // ── Received money ──
+  const [receivedPeriod, setReceivedPeriod] = useState('month');
+
+  const allSettlements = useMemo(() => getAllSettlements(splits), [splits]);
+
+  const receivedAmount = useMemo(() => {
+    const today = todayStr;
+    if (receivedPeriod === 'today') {
+      return getReceivedInRange(splits, today, today);
+    }
+    if (receivedPeriod === 'week') {
+      const d = new Date(now);
+      const day = d.getDay();
+      const diff = day === 0 ? 6 : day - 1;
+      d.setDate(d.getDate() - diff);
+      const mon = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      return getReceivedInRange(splits, mon, today);
+    }
+    if (receivedPeriod === 'month') {
+      const start = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-01`;
+      return getReceivedInRange(splits, start, today);
+    }
+    // all time
+    return allSettlements.reduce((s, r) => s + r.amount, 0);
+  }, [receivedPeriod, splits, allSettlements, todayStr, currentMonth, currentYear]);
+
+  const recentSettlements = useMemo(() => allSettlements.slice(0, 6), [allSettlements]);
 
   return (
     <div className="page">
@@ -68,19 +105,57 @@ export default function Dashboard() {
         </Link>
       </div>
 
-      {/* Summary Cards */}
-      <div className="stats-grid">
-        <div className="stat-card stat-card--primary">
-          <div className="stat-icon">
-            <TrendingUp size={22} />
-          </div>
-          <div className="stat-content">
-            <p className="stat-label">This Month</p>
-            <p className="stat-value">{formatCurrency(monthTotal)}</p>
-            <p className="stat-meta">{monthExpenses.length} transactions</p>
+      {/* ── Money Overview (3 key numbers) ── */}
+      <div className="money-overview-card">
+        <div className="money-overview-item">
+          <div className="mo-icon mo-icon--blue"><Receipt size={20} /></div>
+          <div className="mo-body">
+            <p className="mo-label">This Month Total</p>
+            <p className="mo-value">{formatCurrency(monthTotal)}</p>
+            <p className="mo-meta">{monthExpenses.length} transactions recorded</p>
           </div>
         </div>
 
+        <div className="mo-divider" />
+
+        <div className="money-overview-item money-overview-item--highlight">
+          <div className="mo-icon mo-icon--indigo"><Wallet size={20} /></div>
+          <div className="mo-body">
+            <p className="mo-label">My Spend</p>
+            <p className="mo-value mo-value--primary">{formatCurrency(myMonthSpend)}</p>
+            <p className="mo-meta">
+              {monthTotal > myMonthSpend
+                ? `₹${(monthTotal - myMonthSpend).toLocaleString('en-IN')} paid by others`
+                : 'No splits this month'}
+            </p>
+          </div>
+        </div>
+
+        <div className="mo-divider" />
+
+        <div className="money-overview-item">
+          <div className={`mo-icon ${getTotalOutstanding() > 0 ? 'mo-icon--green' : 'mo-icon--check'}`}>
+            {getTotalOutstanding() > 0 ? <HandCoins size={20} /> : <CheckCircle2 size={20} />}
+          </div>
+          <div className="mo-body">
+            <p className="mo-label">To Receive</p>
+            {getTotalOutstanding() > 0 ? (
+              <>
+                <p className="mo-value mo-value--green">{formatCurrency(getTotalOutstanding())}</p>
+                <p className="mo-meta">from {people.filter(p => getPersonBalance(p.id) > 0).length} people</p>
+              </>
+            ) : (
+              <>
+                <p className="mo-value mo-value--settled">All Clear ✓</p>
+                <p className="mo-meta">No pending dues</p>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Secondary Stats ── */}
+      <div className="stats-grid stats-grid--2">
         <div className="stat-card stat-card--orange">
           <div className="stat-icon">
             <Calendar size={22} />
@@ -89,17 +164,6 @@ export default function Dashboard() {
             <p className="stat-label">Today</p>
             <p className="stat-value">{formatCurrency(todayTotal)}</p>
             <p className="stat-meta">{todayExpenses.length} transactions</p>
-          </div>
-        </div>
-
-        <div className="stat-card stat-card--green">
-          <div className="stat-icon">
-            <ShoppingBag size={22} />
-          </div>
-          <div className="stat-content">
-            <p className="stat-label">Total Expenses</p>
-            <p className="stat-value">{expenses.length}</p>
-            <p className="stat-meta">all time</p>
           </div>
         </div>
 
@@ -218,25 +282,27 @@ export default function Dashboard() {
                       {cat?.name || 'Other'} • {formatDate(expense.date)}
                     </p>
                   </div>
-                  <p className="transaction-amount">
-                    -{formatCurrency(expense.amount)}
-                  </p>
+                  <div className="transaction-amount-col">
+                    <p className="transaction-amount">-{formatCurrency(expense.amount)}</p>
+                    {splits.find(s => s.expenseId === expense.id) && (
+                      <p className="my-share-tag">
+                        My share: {formatCurrency(getPersonalAmount(expense, splits))}
+                      </p>
+                    )}
+                  </div>
                 </div>
               );
             })}
           </div>
         )}      </div>
 
-      {/* Outstanding splits summary */}
+      {/* Outstanding Dues detail — only when someone owes */}
       {getTotalOutstanding() > 0 && (
         <div className="card splits-dashboard-card">
           <div className="card-header">
-            <h2 className="card-title">💸 Outstanding Dues</h2>
-            <Link to="/splits" className="link-btn">View All →</Link>
+            <h2 className="card-title">💸 Who Owes You</h2>
+            <Link to="/splits" className="link-btn">Settle Up →</Link>
           </div>
-          <p className="splits-dash-total">
-            {formatCurrency(getTotalOutstanding())} to receive
-          </p>
           <div className="splits-dash-people">
             {people
               .filter(p => getPersonBalance(p.id) > 0)
@@ -269,6 +335,45 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {/* ── Money Received Section ── */}
+      <div className="card received-card">
+        <div className="card-header">
+          <h2 className="card-title">💰 Money Received</h2>
+          <div className="received-tabs">
+            {[['today','Today'],['week','This Week'],['month','This Month'],['all','All Time']].map(([val, label]) => (
+              <button
+                key={val}
+                className={`received-tab ${receivedPeriod === val ? 'received-tab--active' : ''}`}
+                onClick={() => setReceivedPeriod(val)}
+              >{label}</button>
+            ))}
+          </div>
+        </div>
+        <div className="received-summary">
+          <span className="received-total">{formatCurrency(receivedAmount)}</span>
+          <span className="received-sublabel">
+            received {receivedPeriod === 'today' ? 'today' : receivedPeriod === 'week' ? 'this week' : receivedPeriod === 'month' ? 'this month' : 'all time'}
+          </span>
+        </div>
+        {recentSettlements.length === 0 ? (
+          <div className="empty-state"><p>No payments received yet.</p></div>
+        ) : (
+          <div className="received-list">
+            {recentSettlements.map((s) => (
+              <div key={s.settlementId} className="received-item">
+                <div className="received-avatar">{s.personName?.[0]?.toUpperCase() || '?'}</div>
+                <div className="received-info">
+                  <p className="received-name">{s.personName}</p>
+                  <p className="received-meta">{s.expenseTitle}{s.note ? ` • ${s.note}` : ''} • {formatDate(s.date)}</p>
+                </div>
+                <span className="received-amount">+{formatCurrency(s.amount)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }

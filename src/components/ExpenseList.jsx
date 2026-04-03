@@ -6,6 +6,8 @@ import {
   formatCurrency,
   formatDate,
   getMonthName,
+  getPersonalAmount,
+  getPersonalTotal,
 } from '../utils/helpers';
 import EditExpenseModal from './EditExpenseModal';
 
@@ -41,6 +43,11 @@ export default function ExpenseList() {
   const total = useMemo(
     () => filtered.reduce((s, e) => s + parseFloat(e.amount || 0), 0),
     [filtered]
+  );
+
+  const myTotal = useMemo(
+    () => getPersonalTotal(filtered, splits),
+    [filtered, splits]
   );
 
   const handleDelete = (id) => {
@@ -117,7 +124,12 @@ export default function ExpenseList() {
       {filtered.length > 0 && (
         <div className="list-summary">
           <span>{filtered.length} expense{filtered.length !== 1 ? 's' : ''}</span>
-          <span className="list-total">Total: {formatCurrency(total)}</span>
+          <div className="list-summary-right">
+            <span className="list-total">Total: {formatCurrency(total)}</span>
+            {myTotal < total && (
+              <span className="list-my-total">My share: {formatCurrency(myTotal)}</span>
+            )}
+          </div>
         </div>
       )}
 
@@ -158,7 +170,14 @@ export default function ExpenseList() {
                     )}
                   </p>
                 </div>
-                <p className="expense-amount">-{formatCurrency(expense.amount)}</p>
+                <div className="expense-amount-col">
+                  <p className="expense-amount">-{formatCurrency(expense.amount)}</p>
+                  {hasSplit(expense.id) && (
+                    <p className="expense-my-share">
+                      My share: {formatCurrency(getPersonalAmount(expense, splits))}
+                    </p>
+                  )}
+                </div>
                 <div className="expense-actions">
                   <button
                     className="icon-btn icon-btn--edit"

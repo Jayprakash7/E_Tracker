@@ -3,16 +3,18 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend,
 } from 'recharts';
-import { Wallet, TrendingUp, Tag, Percent } from 'lucide-react';
+import { Wallet, TrendingUp, Tag, CalendarDays } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { useSplit } from '../context/SplitContext';
 import {
   formatCurrency,
   getMonthName,
   getMonthExpenses,
-  getTotalAmount,
-  getCategoryTotals,
-  getDailyTotals,
-  getMonthlyTotals,
+  getPersonalTotal,
+  getPersonalCategoryTotals,
+  getPersonalDailyTotals,
+  getPersonalMonthlyTotals,
+  getWeeklyTotals,
 } from '../utils/helpers';
 
 const MONTHS = Array.from({ length: 12 }, (_, i) => ({ value: i, label: getMonthName(i) }));
@@ -20,6 +22,7 @@ const YEARS = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
 
 export default function Reports() {
   const { expenses, categories } = useApp();
+  const { splits } = useSplit();
   const now = new Date();
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
@@ -29,38 +32,56 @@ export default function Reports() {
     [expenses, selectedMonth, selectedYear]
   );
 
-  const monthTotal = useMemo(() => getTotalAmount(monthExpenses), [monthExpenses]);
-  const avgDaily = useMemo(() => {
+  // ── Everything below is MY personal spend only ──
+  const myMonthTotal = useMemo(
+    () => getPersonalTotal(monthExpenses, splits),
+    [monthExpenses, splits]
+  );
+
+  const myAvgDaily = useMemo(() => {
     if (monthExpenses.length === 0) return 0;
     const days = new Date(selectedYear, selectedMonth + 1, 0).getDate();
-    return monthTotal / days;
-  }, [monthExpenses, monthTotal, selectedMonth, selectedYear]);
+    return myMonthTotal / days;
+  }, [myMonthTotal, monthExpenses, selectedMonth, selectedYear]);
 
-  const categoryTotals = useMemo(
-    () => getCategoryTotals(monthExpenses, categories),
-    [monthExpenses, categories]
+  const myCategoryTotals = useMemo(
+    () => getPersonalCategoryTotals(monthExpenses, categories, splits),
+    [monthExpenses, categories, splits]
   );
 
-  const dailyData = useMemo(
-    () => getDailyTotals(monthExpenses, selectedMonth, selectedYear),
-    [monthExpenses, selectedMonth, selectedYear]
+  const myDailyData = useMemo(
+    () => getPersonalDailyTotals(monthExpenses, selectedMonth, selectedYear, splits),
+    [monthExpenses, selectedMonth, selectedYear, splits]
   );
 
-  const yearlyTrend = useMemo(() => getMonthlyTotals(expenses, 12), [expenses]);
+  const myYearlyTrend = useMemo(
+    () => getPersonalMonthlyTotals(expenses, splits, 12),
+    [expenses, splits]
+  );
 
-  const topCategory = categoryTotals[0];
+  const weeklyData = useMemo(
+    () => getWeeklyTotals(expenses, splits, 4),
+    [expenses, splits]
+  );
 
-  const totalMonthPercent = useMemo(() => {
-    const grand = getTotalAmount(expenses);
-    return grand > 0 ? ((monthTotal / grand) * 100).toFixed(1) : 0;
-  }, [monthTotal, expenses]);
+  const topCategory = myCategoryTotals[0];
+
+  const myAllTimeTotal = useMemo(
+    () => getPersonalTotal(expenses, splits),
+    [expenses, splits]
+  );
+
+  const myAllTimePercent = useMemo(
+    () => myAllTimeTotal > 0 ? ((myMonthTotal / myAllTimeTotal) * 100).toFixed(1) : 0,
+    [myMonthTotal, myAllTimeTotal]
+  );
 
   return (
     <div className="page">
       <div className="reports-header">
         <div>
           <h1 className="page-title">Reports</h1>
-          <p className="page-subtitle">Spending analysis & insights</p>
+          <p className="page-subtitle">Your personal spending — splits excluded</p>
         </div>
         <div className="filters-group reports-filters">
           <select
@@ -84,22 +105,22 @@ export default function Reports() {
         </div>
       </div>
 
-      {/* Summary cards */}
+      {/* Summary cards — all MY spend */}
       <div className="stats-grid stats-grid--4">
         <div className="stat-card stat-card--primary">
           <div className="stat-icon"><Wallet size={20} /></div>
           <div className="stat-content">
-            <p className="stat-label">Total Spending</p>
-            <p className="stat-value">{formatCurrency(monthTotal)}</p>
+            <p className="stat-label">My Spend</p>
+            <p className="stat-value">{formatCurrency(myMonthTotal)}</p>
             <p className="stat-meta">{monthExpenses.length} transactions</p>
           </div>
         </div>
         <div className="stat-card stat-card--orange">
           <div className="stat-icon"><TrendingUp size={20} /></div>
           <div className="stat-content">
-            <p className="stat-label">Daily Average</p>
-            <p className="stat-value">{formatCurrency(avgDaily)}</p>
-            <p className="stat-meta">per day</p>
+            <p className="stat-label">My Daily Avg</p>
+            <p className="stat-value">{formatCurrency(myAvgDaily)}</p>
+            <p className="stat-meta">per day this month</p>
           </div>
         </div>
         <div className="stat-card stat-card--green">
@@ -115,25 +136,60 @@ export default function Reports() {
           </div>
         </div>
         <div className="stat-card stat-card--purple">
-          <div className="stat-icon"><Percent size={20} /></div>
+          <div className="stat-icon"><CalendarDays size={20} /></div>
           <div className="stat-content">
-            <p className="stat-label">% of All Time</p>
-            <p className="stat-value">{totalMonthPercent}%</p>
-            <p className="stat-meta">of total spending</p>
+            <p className="stat-label">% of My All Time</p>
+            <p className="stat-value">{myAllTimePercent}%</p>
+            <p className="stat-meta">of total personal spend</p>
           </div>
         </div>
       </div>
 
-      {/* Daily spending chart */}
+      {/* Weekly Personal Breakdown */}
+      <div className="card chart-card chart-card--full">
+        <div className="weekly-card-header">
+          <div>
+            <h2 className="card-title">Weekly Breakdown</h2>
+            <p className="card-subtitle">Your actual spend each week</p>
+          </div>
+        </div>
+        {weeklyData.every(w => w.personal === 0) ? (
+          <div className="empty-chart">No data yet</div>
+        ) : (
+          <>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={weeklyData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => v === 0 ? '' : `₹${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`} />
+                <Tooltip formatter={(v) => [formatCurrency(v), 'My Spend']} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                <Bar dataKey="personal" fill="#6366f1" radius={[4, 4, 0, 0]} name="My Spend" />
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="weekly-summary-row">
+              {weeklyData.map((w, i) => (
+                <div key={i} className="weekly-summary-item">
+                  <p className="wsi-label">{w.label}</p>
+                  <p className="wsi-personal">{formatCurrency(w.personal)}</p>
+                  {w.total > w.personal && (
+                    <p className="wsi-saved">+{formatCurrency(w.total - w.personal)} split</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Daily spending chart — my spend only */}
       <div className="card chart-card chart-card--full">
         <h2 className="card-title">
-          Daily Spending — {getMonthName(selectedMonth)} {selectedYear}
+          My Daily Spend — {getMonthName(selectedMonth)} {selectedYear}
         </h2>
-        {monthTotal === 0 ? (
-          <div className="empty-chart">No expenses this month</div>
+        {myMonthTotal === 0 ? (
+          <div className="empty-chart">No personal expenses this month</div>
         ) : (
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={dailyData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
+            <BarChart data={myDailyData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
               <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={2} />
               <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => v === 0 ? '' : `₹${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`} />
               <Tooltip formatter={(v) => formatCurrency(v)} labelFormatter={(l) => `Day ${l}`} />
@@ -143,17 +199,17 @@ export default function Reports() {
         )}
       </div>
 
-      {/* Pie + Category table */}
+      {/* Pie + Category table — my spend only */}
       <div className="charts-row">
         <div className="card chart-card">
-          <h2 className="card-title">Category Breakdown</h2>
-          {categoryTotals.length === 0 ? (
+          <h2 className="card-title">My Category Breakdown</h2>
+          {myCategoryTotals.length === 0 ? (
             <div className="empty-chart">No data</div>
           ) : (
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie
-                  data={categoryTotals}
+                  data={myCategoryTotals}
                   cx="50%"
                   cy="50%"
                   outerRadius={90}
@@ -161,7 +217,7 @@ export default function Reports() {
                   dataKey="total"
                   nameKey="name"
                 >
-                  {categoryTotals.map((cat) => (
+                  {myCategoryTotals.map((cat) => (
                     <Cell key={cat.id} fill={cat.color} />
                   ))}
                 </Pie>
@@ -172,15 +228,15 @@ export default function Reports() {
           )}
         </div>
 
-        {/* Category summary table */}
+        {/* Category summary table — my spend only */}
         <div className="card">
-          <h2 className="card-title">Category Summary</h2>
-          {categoryTotals.length === 0 ? (
-            <div className="empty-state"><p>No expenses this month.</p></div>
+          <h2 className="card-title">My Category Summary</h2>
+          {myCategoryTotals.length === 0 ? (
+            <div className="empty-state"><p>No personal expenses this month.</p></div>
           ) : (
             <div className="category-table">
-              {categoryTotals.map((cat) => {
-                const pct = monthTotal > 0 ? ((cat.total / monthTotal) * 100).toFixed(1) : 0;
+              {myCategoryTotals.map((cat) => {
+                const pct = myMonthTotal > 0 ? ((cat.total / myMonthTotal) * 100).toFixed(1) : 0;
                 return (
                   <div key={cat.id} className="cat-row">
                     <div className="cat-row-top">
@@ -205,11 +261,11 @@ export default function Reports() {
         </div>
       </div>
 
-      {/* 12-month trend */}
+      {/* 12-month personal trend */}
       <div className="card chart-card chart-card--full">
-        <h2 className="card-title">12-Month Spending Trend</h2>
+        <h2 className="card-title">12-Month Personal Spend Trend</h2>
         <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={yearlyTrend} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
+          <LineChart data={myYearlyTrend} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
             <XAxis dataKey="month" tick={{ fontSize: 12 }} />
             <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₹${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`} />
@@ -228,3 +284,4 @@ export default function Reports() {
     </div>
   );
 }
+

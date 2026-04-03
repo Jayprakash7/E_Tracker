@@ -525,6 +525,62 @@ a { text-decoration: none; color: inherit; }
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px; margin-bottom: 24px;
 }
+.stats-grid--2 { grid-template-columns: 1fr 1fr; margin-top: 0; }
+
+/* ── Money Overview Hero Card ── */
+.money-overview-card {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  gap: 0;
+}
+[data-theme="dark"] .money-overview-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(99,102,241,0.06) 100%);
+  border-color: rgba(99,102,241,0.2);
+  box-shadow: 0 4px 32px rgba(99,102,241,0.1);
+  backdrop-filter: blur(12px);
+}
+.money-overview-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 4px 20px;
+}
+.money-overview-item--highlight {
+  background: var(--primary-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 20px;
+  margin: -8px 0;
+}
+[data-theme="dark"] .money-overview-item--highlight {
+  background: rgba(99,102,241,0.15);
+  border: 1px solid rgba(99,102,241,0.3);
+}
+.mo-divider {
+  width: 1px; align-self: stretch;
+  background: var(--border); margin: 4px 0;
+}
+.mo-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.mo-icon--blue   { background: rgba(59,130,246,0.12); color: #3b82f6; }
+.mo-icon--indigo { background: var(--primary-light);  color: var(--primary); }
+.mo-icon--green  { background: rgba(34,197,94,0.12);  color: #22c55e; }
+[data-theme="dark"] .mo-icon--blue   { background: rgba(59,130,246,0.2);  box-shadow: 0 0 12px rgba(59,130,246,0.25); }
+[data-theme="dark"] .mo-icon--indigo { background: rgba(99,102,241,0.25); box-shadow: 0 0 12px rgba(99,102,241,0.3);  }
+[data-theme="dark"] .mo-icon--green  { background: rgba(34,197,94,0.2);   box-shadow: 0 0 12px rgba(34,197,94,0.25);  }
+.mo-body { flex: 1; min-width: 0; }
+.mo-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); font-weight: 600; margin-bottom: 3px; }
+.mo-value { font-size: 24px; font-weight: 700; color: var(--text); white-space: nowrap; }
+.mo-value--primary { color: var(--primary); }
+.mo-value--green   { color: #22c55e; }
+.mo-meta { font-size: 11.5px; color: var(--text-secondary); margin-top: 3px; }
 .stat-card {
   background: var(--card);
   border-radius: var(--radius); padding: 20px;
@@ -563,6 +619,16 @@ a { text-decoration: none; color: inherit; }
 .chart-card .card-title { margin-bottom: 16px; }
 .chart-card--full { width: 100%; }
 .empty-chart { height: 200px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 14px; }
+.card-subtitle { font-size: 12px; color: var(--text-secondary); margin-top: 2px; margin-bottom: 14px; }
+.weekly-card-header { margin-bottom: 4px; }
+
+/* Weekly Personal Breakdown */
+.weekly-summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; }
+.weekly-summary-item { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; text-align: center; }
+[data-theme="dark"] .weekly-summary-item { background: rgba(255,255,255,0.03); }
+.wsi-label    { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; }
+.wsi-personal { font-size: 15px; font-weight: 700; color: var(--primary); }
+.wsi-saved    { font-size: 10px; color: #22c55e; margin-top: 3px; font-weight: 500; }
 
 /*  Transaction List  */
 .transaction-list  { display: flex; flex-direction: column; gap: 2px; }
@@ -573,6 +639,8 @@ a { text-decoration: none; color: inherit; }
 .transaction-title { font-weight: 500; font-size: 14px; color: var(--text); }
 .transaction-meta  { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 .transaction-amount { font-weight: 600; color: var(--danger); white-space: nowrap; }
+.transaction-amount-col { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.my-share-tag { font-size: 11px; font-weight: 500; color: var(--primary); background: var(--primary-light); padding: 2px 7px; border-radius: 20px; white-space: nowrap; }
 
 /*  Expense List Page  */
 .filters-bar   { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
@@ -591,7 +659,9 @@ a { text-decoration: none; color: inherit; }
 [data-theme="dark"] .search-input:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
 
 .list-summary { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; padding: 0 4px; }
+.list-summary-right { display: flex; align-items: center; gap: 12px; }
 .list-total   { font-weight: 600; color: var(--text); }
+.list-my-total { font-weight: 600; color: var(--primary); font-size: 12px; background: var(--primary-light); padding: 3px 10px; border-radius: 20px; }
 
 .expense-list { display: flex; flex-direction: column; gap: 8px; }
 .expense-card {
@@ -612,6 +682,8 @@ a { text-decoration: none; color: inherit; }
 .expense-meta    { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 .expense-notes   { color: var(--text-secondary); font-style: italic; }
 .expense-amount  { font-weight: 600; color: var(--danger); white-space: nowrap; }
+.expense-amount-col { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.expense-my-share { font-size: 11px; font-weight: 500; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
 .expense-actions { display: flex; gap: 6px; }
 
 /*  Buttons  */
@@ -850,6 +922,47 @@ select.form-input { cursor: pointer; }
 .splits-dash-amount { font-size: 14px; font-weight: 700; }
 .splits-dash-label  { font-size: 11px; color: var(--text-secondary); }
 
+/* To Receive — All Clear state */
+.mo-icon--check { background: rgba(34,197,94,0.12); color: #22c55e; }
+[data-theme="dark"] .mo-icon--check { background: rgba(34,197,94,0.2); box-shadow: 0 0 12px rgba(34,197,94,0.25); }
+.mo-value--settled { font-size: 18px; font-weight: 700; color: #22c55e; }
+
+/* ── Money Received Section ── */
+.received-card { margin-bottom: 24px; }
+.received-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.received-tab {
+  padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
+  border: 1px solid var(--border); background: transparent; color: var(--text-secondary);
+  cursor: pointer; transition: all var(--transition); line-height: 1.4;
+  -webkit-appearance: none; appearance: none;
+}
+.received-tab:hover { border-color: var(--primary); color: var(--primary); }
+.received-tab.received-tab--active,
+.received-tab.received-tab--active:hover {
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  border-color: var(--primary) !important;
+}
+[data-theme="dark"] .received-tab.received-tab--active { box-shadow: 0 2px 10px rgba(99,102,241,0.4); }
+
+.received-summary { display: flex; align-items: baseline; gap: 8px; padding: 14px 0 12px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+.received-total { font-size: 28px; font-weight: 800; color: #22c55e; }
+.received-sublabel { font-size: 12px; color: var(--text-secondary); }
+
+.received-list { display: flex; flex-direction: column; gap: 2px; }
+.received-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.received-item:last-child { border-bottom: none; }
+.received-avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff; font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.received-info   { flex: 1; min-width: 0; }
+.received-name   { font-size: 13px; font-weight: 600; color: var(--text); }
+.received-meta   { font-size: 11px; color: var(--text-secondary); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.received-amount { font-size: 14px; font-weight: 700; color: #22c55e; white-space: nowrap; }
+
 /*  Overpayments  */
 .overpay-notice { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 10px 12px; display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-start; }
 [data-theme="dark"] .overpay-notice { background: var(--warning-bg); border-color: rgba(251,191,36,0.25); }
@@ -943,6 +1056,12 @@ button, a, select, input[type="checkbox"], input[type="radio"] { -webkit-tap-hig
   .page-title    { font-size: 20px; }
   .page-subtitle { font-size: 13px; }
   .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stats-grid--2 { grid-template-columns: 1fr 1fr; }
+  .money-overview-card { grid-template-columns: 1fr; padding: 16px; gap: 0; }
+  .money-overview-item { padding: 12px 4px; }
+  .money-overview-item--highlight { margin: 0; padding: 12px; }
+  .mo-divider { width: 100%; height: 1px; margin: 0; }
+  .mo-value { font-size: 20px; }
   .stat-card { padding: 12px 10px; gap: 8px; border-radius: 12px; align-items: center; }
   .stat-icon { width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0; }
   .stat-icon svg { width: 16px; height: 16px; }
@@ -983,7 +1102,7 @@ button, a, select, input[type="checkbox"], input[type="radio"] { -webkit-tap-hig
 }
 @media (max-width: 400px) {
   .stats-grid { grid-template-columns: 1fr 1fr; }
-  .stat-value { font-size: 14px; }
+  .stats-grid--2 { grid-template-columns: 1fr 1fr; }
   .lp-numpad  { gap: 7px; }
   .lp-key     { height: 56px; font-size: 20px; }
 }

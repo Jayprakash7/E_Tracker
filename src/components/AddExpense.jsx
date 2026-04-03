@@ -46,14 +46,14 @@ export default function AddExpense() {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
     }
-    const expense = addExpense({
+    const expense = await addExpense({
       title: form.title.trim(),
       amount: parseFloat(form.amount),
       categoryId: form.categoryId,
