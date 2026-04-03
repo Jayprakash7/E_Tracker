@@ -67,11 +67,13 @@ export default function SplitsPage() {
                 </span>
                 <div className="splits-pill-info">
                   <span className="splits-pill-name">{person.name}</span>
-                  <span className="splits-pill-amount" style={{ color: person.color }}>
-                    {formatCurrency(getPersonBalance(person.id))}
-                  </span>
+                  <div className="splits-pill-footer">
+                    <span className="splits-pill-amount" style={{ color: person.color }}>
+                      {formatCurrency(getPersonBalance(person.id))}
+                    </span>
+                    <span className="splits-pill-settle">Settle →</span>
+                  </div>
                 </div>
-                <span className="splits-pill-settle">Settle →</span>
               </button>
             ))}
           </div>
