@@ -854,13 +854,13 @@ select.form-input { cursor: pointer; }
 .splits-summary-amount { font-size: 26px; font-weight: 700; color: var(--text); margin-top: 2px; }
 .splits-people-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .splits-person-pill:last-child:nth-child(odd) { grid-column: 1 / -1; }
-.splits-person-pill { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid; border-radius: var(--radius); background: var(--card); cursor: pointer; transition: all var(--transition); text-align: left; min-width: 0; }
+.splits-person-pill { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid; border-radius: var(--radius); background: var(--card); cursor: pointer; transition: all var(--transition); text-align: left; min-width: 0; overflow: hidden; width: 100%; }
 .splits-person-pill:hover { box-shadow: 0 4px 12px rgba(0,0,0,.1); transform: translateY(-1px); }
 [data-theme="dark"] .splits-person-pill { background: rgba(255,255,255,0.04); backdrop-filter: blur(8px); }
 [data-theme="dark"] .splits-person-pill:hover { background: rgba(255,255,255,0.08); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
 .splits-pill-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0; }
 .splits-pill-info   { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-.splits-pill-name   { font-size: 13px; font-weight: 600; color: var(--text); }
+.splits-pill-name   { font-size: 13px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .splits-pill-footer { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
 .splits-pill-amount { font-size: 14px; font-weight: 700; }
 .splits-pill-settle { font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
@@ -1098,11 +1098,22 @@ button, a, select, input[type="checkbox"], input[type="radio"] { -webkit-tap-hig
   .settle-modal  { max-width: 100%; }
   .reports-header { gap: 10px; }
   .splits-summary-amount { font-size: 22px; }
-  .splits-person-pill    { flex: 1; min-width: 140px; }
+  .splits-person-pill    { padding: 8px 10px; gap: 8px; min-width: 0; overflow: hidden; }
+  .splits-pill-avatar    { width: 32px; height: 32px; font-size: 13px; flex-shrink: 0; }
+  .splits-pill-name      { font-size: 12px; }
+  .splits-pill-footer    { flex-direction: row; align-items: center; justify-content: space-between; gap: 4px; flex-wrap: nowrap; }
+  .splits-pill-amount    { font-size: 12px; flex-shrink: 1; min-width: 0; }
+  .splits-pill-settle    { font-size: 10px; white-space: nowrap; flex-shrink: 0; }
   .you-owe-row { flex-direction: column; } .you-owe-right { align-items: flex-start; }
   .split-card-top { flex-direction: column; gap: 8px; }
 }
 @media (max-width: 400px) {
+  .splits-people-row { grid-template-columns: 1fr 1fr; }
+  .splits-person-pill { padding: 8px; gap: 6px; }
+  .splits-pill-avatar { width: 28px; height: 28px; font-size: 12px; }
+  .splits-pill-name   { font-size: 11px; }
+  .splits-pill-amount { font-size: 11px; }
+  .splits-pill-settle { font-size: 9px; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .stats-grid--2 { grid-template-columns: 1fr 1fr; }
   .lp-numpad  { gap: 7px; }
