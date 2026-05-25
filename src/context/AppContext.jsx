@@ -18,6 +18,7 @@ export const DEFAULT_CATEGORIES = [
   { id: 'cat8', name: 'Other',             color: '#64748b', icon: '\u{1F4E6}' },
   { id: 'cat9', name: 'Fuel',              color: '#f97316', icon: '⛽' },
   { id: 'cat10', name: 'Celebrations',      color: '#e11d48', icon: '🎉' },
+  { id: 'cat11', name: 'Puja',               color: '#ea580c', icon: '🪔' },
 ];
 
 // Seed default categories — always overwrites to fix any corrupted icons
