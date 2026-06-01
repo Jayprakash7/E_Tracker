@@ -77,13 +77,13 @@ export default function SettleUpModal({ person, onClose }) {
     document.body.appendChild(container);
 
     try {
-      const canvas = await html2canvas(container, { scale: 2, useCORS: true, backgroundColor: '#fff' });
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
+      const canvas = await html2canvas(container, { scale: 1.5, useCORS: true, backgroundColor: '#fff', logging: false });
+      const imgData = canvas.toDataURL('image/jpeg', 0.85);
+      const pdf = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
       const pageW = pdf.internal.pageSize.getWidth();
       const pageH = pdf.internal.pageSize.getHeight();
       const imgH = (canvas.height * pageW) / canvas.width;
-      pdf.addImage(imgData, 'PNG', 0, 0, pageW, Math.min(imgH, pageH));
+      pdf.addImage(imgData, 'JPEG', 0, 0, pageW, Math.min(imgH, pageH));
       pdf.save(`${person.name}_dues_statement.pdf`);
     } finally {
       document.body.removeChild(container);
