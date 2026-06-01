@@ -851,6 +851,14 @@ select.form-input { cursor: pointer; }
 .splits-summary-card { margin-bottom: 8px; }
 .splits-summary-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
 .splits-summary-label  { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .04em; }
+
+/* Dashboard month navigation */
+.dash-month-nav { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+.dash-month-btn { display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--card); color: var(--text-secondary); padding: 0; transition: all var(--transition); }
+.dash-month-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.dash-month-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.dash-month-label { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 6px; min-width: 120px; justify-content: center; }
+.dash-month-badge { font-size: 10px; font-weight: 600; background: var(--primary-light); color: var(--primary); padding: 1px 7px; border-radius: 20px; }
 .splits-summary-amount { font-size: 26px; font-weight: 700; color: var(--text); margin-top: 2px; }
 .splits-people-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .splits-person-pill:last-child:nth-child(odd) { grid-column: 1 / -1; }

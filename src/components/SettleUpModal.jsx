@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Download } from 'lucide-react';
 import { useSplit } from '../context/SplitContext';
 import { formatCurrency, formatDate } from '../utils/helpers';
 
@@ -19,7 +19,75 @@ export default function SettleUpModal({ person, onClose }) {
     .filter(s => s.entries.some(e => e.personId === person.id && getEntryRemaining(e) > 0))
     .sort((a, b) => new Date(a.expenseDate) - new Date(b.expenseDate));
 
-  // Preview â€” which splits will be cleared and whether there's overpayment
+  const downloadPDF = () => {
+    const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
+    const rows = personSplits.map((s, i) => {
+      const entry = s.entries.find(e => e.personId === person.id);
+      const remaining = getEntryRemaining(entry);
+      return `<tr style="background:${i % 2 === 0 ? '#f8fafc' : '#fff'}">
+        <td style="padding:10px 14px;color:#1e293b;font-size:13px">${s.expenseTitle}</td>
+        <td style="padding:10px 14px;color:#64748b;font-size:13px">${formatDate(s.expenseDate)}</td>
+        <td style="padding:10px 14px;color:#6366f1;font-weight:700;font-size:13px;text-align:right">${formatCurrency(remaining)}</td>
+      </tr>`;
+    }).join('');
+
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${person.name} - Dues Statement</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',Arial,sans-serif;background:#fff;color:#1e293b}
+  .hdr{background:#6366f1;color:#fff;padding:24px 40px;display:flex;justify-content:space-between;align-items:center}
+  .hdr h1{font-size:28px;font-weight:700}
+  .hdr span{font-size:13px;opacity:.85}
+  .body{padding:32px 40px}
+  .meta{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px}
+  .meta h2{font-size:20px;font-weight:700}
+  .meta p{font-size:12px;color:#64748b;margin-top:4px}
+  .mr{text-align:right}
+  .mr .lbl{font-size:12px;color:#64748b}
+  .mr .val{font-size:18px;font-weight:700;color:#6366f1}
+  hr{border:none;border-top:1px solid #e2e8f0;margin-bottom:20px}
+  table{width:100%;border-collapse:collapse}
+  thead tr{background:#f1f5f9}
+  thead th{padding:10px 14px;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;text-align:left}
+  thead th:last-child{text-align:right}
+  tbody td:last-child{text-align:right}
+  .sum{margin-top:24px;background:#6366f1;border-radius:10px;padding:16px 20px;display:flex;justify-content:space-between;color:#fff}
+  .sum span{font-size:15px;font-weight:700}
+  .ftr{margin-top:40px;padding:14px 40px;background:#f1f5f9;display:flex;justify-content:space-between}
+  .ftr p{font-size:11px;color:#64748b;font-style:italic}
+  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style></head><body>
+<div class="hdr"><h1>E-Tracker</h1><span>Split &amp; Dues Statement</span></div>
+<div class="body">
+  <div class="meta">
+    <div><h2>${person.name}'s Outstanding Dues</h2><p>Generated on: ${date}</p></div>
+    <div class="mr"><p class="lbl">Total Outstanding</p><p class="val">${formatCurrency(totalOwed)}</p></div>
+  </div>
+  <hr/>
+  <table><thead><tr><th>Expense</th><th>Date</th><th>Amount Due</th></tr></thead><tbody>${rows}</tbody></table>
+  <div class="sum"><span>Total to Receive</span><span>${formatCurrency(totalOwed)}</span></div>
+</div>
+<div class="ftr"><p>Made by Jay</p><p>&copy; 2026 E-Tracker. All rights reserved.</p></div>
+</body></html>`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, '_blank');
+    if (win) {
+      win.focus();
+      setTimeout(() => { win.print(); URL.revokeObjectURL(url); }, 800);
+    } else {
+      // Fallback for browsers that block popups (common on mobile)
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${person.name}_dues_statement.html`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+  };
+
+  // Preview — which splits will be cleared and whether there's overpayment
   const getPreview = () => {
     let remaining = val;
     const rows = personSplits.map(s => {
@@ -155,6 +223,13 @@ export default function SettleUpModal({ person, onClose }) {
 
         <div className="modal-actions">
           <button className="btn btn-ghost" onClick={onClose}>Cancel</button>
+          <button
+            className="btn btn-ghost"
+            style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+            onClick={downloadPDF}
+          >
+            <Download size={15} /> Download PDF
+          </button>
           <button
             className="btn btn-primary"
             style={{ background: person.color, borderColor: person.color }}

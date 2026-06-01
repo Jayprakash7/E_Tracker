@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell,
 } from 'recharts';
-import { TrendingUp, ArrowUpRight, Calendar, Wallet, HandCoins, Receipt, CheckCircle2 } from 'lucide-react';
+import { TrendingUp, ArrowUpRight, Calendar, Wallet, HandCoins, Receipt, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useSplit } from '../context/SplitContext';
 import {
@@ -31,9 +31,25 @@ export default function Dashboard() {
   const currentYear = now.getFullYear();
   const todayStr = todayString();
 
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+
+  const isCurrentMonth = selectedMonth === currentMonth && selectedYear === currentYear;
+
+  const goToPrevMonth = () => {
+    if (selectedMonth === 0) { setSelectedMonth(11); setSelectedYear(y => y - 1); }
+    else { setSelectedMonth(m => m - 1); }
+  };
+
+  const goToNextMonth = () => {
+    if (isCurrentMonth) return;
+    if (selectedMonth === 11) { setSelectedMonth(0); setSelectedYear(y => y + 1); }
+    else { setSelectedMonth(m => m + 1); }
+  };
+
   const monthExpenses = useMemo(
-    () => getMonthExpenses(expenses, currentMonth, currentYear),
-    [expenses, currentMonth, currentYear]
+    () => getMonthExpenses(expenses, selectedMonth, selectedYear),
+    [expenses, selectedMonth, selectedYear]
   );
 
   const todayExpenses = useMemo(
@@ -56,8 +72,10 @@ export default function Dashboard() {
   const monthlyTrend = useMemo(() => getMonthlyTotals(expenses, 6), [expenses]);
 
   const recentExpenses = useMemo(
-    () => [...expenses].slice(0, 8),
-    [expenses]
+    () => isCurrentMonth
+      ? [...expenses].slice(0, 8)
+      : monthExpenses.slice(0, 8),
+    [expenses, monthExpenses, isCurrentMonth]
   );
 
   const topCategory = categoryTotals[0];
@@ -81,12 +99,13 @@ export default function Dashboard() {
       return getReceivedInRange(splits, mon, today);
     }
     if (receivedPeriod === 'month') {
-      const start = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-01`;
-      return getReceivedInRange(splits, start, today);
+      const start = `${selectedYear}-${String(selectedMonth+1).padStart(2,'0')}-01`;
+      const end = isCurrentMonth ? today : `${selectedYear}-${String(selectedMonth+1).padStart(2,'0')}-${new Date(selectedYear, selectedMonth+1, 0).getDate()}`;
+      return getReceivedInRange(splits, start, end);
     }
     // all time
     return allSettlements.reduce((s, r) => s + r.amount, 0);
-  }, [receivedPeriod, splits, allSettlements, todayStr, currentMonth, currentYear]);
+  }, [receivedPeriod, splits, allSettlements, todayStr, selectedMonth, selectedYear, isCurrentMonth]);
 
   const recentSettlements = useMemo(() => allSettlements.slice(0, 6), [allSettlements]);
 
@@ -96,9 +115,14 @@ export default function Dashboard() {
       <div className="page-header">
         <div>
           <h1 className="page-title">Dashboard</h1>
-          <p className="page-subtitle">
-            {getMonthName(currentMonth)} {currentYear}
-          </p>
+          <div className="dash-month-nav">
+            <button className="dash-month-btn" onClick={goToPrevMonth}><ChevronLeft size={16} /></button>
+            <span className="dash-month-label">
+              {getMonthName(selectedMonth)} {selectedYear}
+              {isCurrentMonth && <span className="dash-month-badge">Current</span>}
+            </span>
+            <button className="dash-month-btn" onClick={goToNextMonth} disabled={isCurrentMonth}><ChevronRight size={16} /></button>
+          </div>
         </div>
         <Link to="/add" className="btn btn-primary hide-on-mobile">
           + Add Expense
@@ -110,7 +134,7 @@ export default function Dashboard() {
         <div className="money-overview-item">
           <div className="mo-icon mo-icon--blue"><Receipt size={20} /></div>
           <div className="mo-body">
-            <p className="mo-label">This Month Total</p>
+            <p className="mo-label">{isCurrentMonth ? 'This Month Total' : `${getMonthName(selectedMonth)} Total`}</p>
             <p className="mo-value">{formatCurrency(monthTotal)}</p>
             <p className="mo-meta">{monthExpenses.length} transactions recorded</p>
           </div>
@@ -204,7 +228,7 @@ export default function Dashboard() {
 
         {/* Category Breakdown */}
         <div className="card chart-card dash-pie-card">
-          <h2 className="card-title">This Month by Category</h2>
+          <h2 className="card-title">{isCurrentMonth ? 'This Month by Category' : `${getMonthName(selectedMonth)} by Category`}</h2>
           {categoryTotals.length === 0 ? (
             <div className="empty-chart">No expenses this month</div>
           ) : (
