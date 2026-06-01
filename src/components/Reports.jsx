@@ -3,7 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line, CartesianGrid, Legend,
 } from 'recharts';
-import { Wallet, TrendingUp, Tag, CalendarDays } from 'lucide-react';
+import { Wallet, TrendingUp, Tag, CalendarDays, ChevronDown, ChevronUp } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useSplit } from '../context/SplitContext';
 import {
@@ -15,6 +15,7 @@ import {
   getPersonalDailyTotals,
   getPersonalMonthlyTotals,
   getWeeklyTotals,
+  getPersonalAmount,
 } from '../utils/helpers';
 
 const MONTHS = Array.from({ length: 12 }, (_, i) => ({ value: i, label: getMonthName(i) }));
@@ -26,6 +27,7 @@ export default function Reports() {
   const now = new Date();
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
+  const [expandedCat, setExpandedCat] = useState(null);
 
   const monthExpenses = useMemo(
     () => getMonthExpenses(expenses, selectedMonth, selectedYear),
@@ -206,25 +208,34 @@ export default function Reports() {
           {myCategoryTotals.length === 0 ? (
             <div className="empty-chart">No data</div>
           ) : (
-            <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie
-                  data={myCategoryTotals}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={90}
-                  innerRadius={40}
-                  dataKey="total"
-                  nameKey="name"
-                >
-                  {myCategoryTotals.map((cat) => (
-                    <Cell key={cat.id} fill={cat.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(v) => formatCurrency(v)} />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+            <>
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie
+                    data={myCategoryTotals}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={85}
+                    innerRadius={40}
+                    dataKey="total"
+                    nameKey="name"
+                  >
+                    {myCategoryTotals.map((cat) => (
+                      <Cell key={cat.id} fill={cat.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(v) => formatCurrency(v)} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="pie-legend">
+                {myCategoryTotals.map((cat) => (
+                  <div key={cat.id} className="pie-legend-item">
+                    <span className="pie-legend-dot" style={{ background: cat.color }} />
+                    <span className="pie-legend-label">{cat.icon} {cat.name}</span>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
 
@@ -237,9 +248,16 @@ export default function Reports() {
             <div className="category-table">
               {myCategoryTotals.map((cat) => {
                 const pct = myMonthTotal > 0 ? ((cat.total / myMonthTotal) * 100).toFixed(1) : 0;
+                const isExpanded = expandedCat === cat.id;
+                const catExpenses = monthExpenses
+                  .filter(e => e.categoryId === cat.id && getPersonalAmount(e, splits) > 0)
+                  .sort((a, b) => new Date(b.date) - new Date(a.date));
                 return (
                   <div key={cat.id} className="cat-row">
-                    <div className="cat-row-top">
+                    <div
+                      className="cat-row-top cat-row-clickable"
+                      onClick={() => setExpandedCat(isExpanded ? null : cat.id)}
+                    >
                       <div className="cat-row-left">
                         <span className="cat-dot" style={{ background: cat.color }} />
                         <span className="cat-icon">{cat.icon}</span>
@@ -248,11 +266,23 @@ export default function Reports() {
                       <div className="cat-row-meta">
                         <span className="cat-pct">{pct}%</span>
                         <span className="cat-amount">{formatCurrency(cat.total)}</span>
+                        {isExpanded ? <ChevronUp size={14} style={{ color: '#94a3b8' }} /> : <ChevronDown size={14} style={{ color: '#94a3b8' }} />}
                       </div>
                     </div>
                     <div className="cat-bar-wrap">
                       <div className="cat-bar" style={{ width: `${pct}%`, background: cat.color }} />
                     </div>
+                    {isExpanded && (
+                      <div className="cat-breakdown">
+                        {catExpenses.map(e => (
+                          <div key={e.id} className="cat-breakdown-row">
+                            <span className="cat-breakdown-title">{e.title}</span>
+                            <span className="cat-breakdown-date">{new Date(e.date + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                            <span className="cat-breakdown-amount" style={{ color: cat.color }}>{formatCurrency(getPersonalAmount(e, splits))}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })}
