@@ -1,5 +1,7 @@
 ﻿import { useState } from 'react';
-import { X, Download } from 'lucide-react';
+import { X, Download, Loader } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import { useSplit } from '../context/SplitContext';
 import { formatCurrency, formatDate } from '../utils/helpers';
 
@@ -9,6 +11,7 @@ export default function SettleUpModal({ person, onClose }) {
   const [amount, setAmount] = useState('');
   const [note,   setNote]   = useState('');
   const [error,  setError]  = useState('');
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   const totalOwed = getPersonOutstanding(person.id);
   const val       = parseFloat(amount) || 0;
@@ -19,71 +22,72 @@ export default function SettleUpModal({ person, onClose }) {
     .filter(s => s.entries.some(e => e.personId === person.id && getEntryRemaining(e) > 0))
     .sort((a, b) => new Date(a.expenseDate) - new Date(b.expenseDate));
 
-  const downloadPDF = () => {
+  const downloadPDF = async () => {
+    setPdfLoading(true);
     const date = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
     const rows = personSplits.map((s, i) => {
       const entry = s.entries.find(e => e.personId === person.id);
       const remaining = getEntryRemaining(entry);
       return `<tr style="background:${i % 2 === 0 ? '#f8fafc' : '#fff'}">
-        <td style="padding:10px 14px;color:#1e293b;font-size:13px">${s.expenseTitle}</td>
-        <td style="padding:10px 14px;color:#64748b;font-size:13px">${formatDate(s.expenseDate)}</td>
-        <td style="padding:10px 14px;color:#6366f1;font-weight:700;font-size:13px;text-align:right">${formatCurrency(remaining)}</td>
+        <td style="padding:10px 14px;color:#1e293b;font-size:13px;border-bottom:1px solid #f1f5f9">${s.expenseTitle}</td>
+        <td style="padding:10px 14px;color:#64748b;font-size:13px;border-bottom:1px solid #f1f5f9">${formatDate(s.expenseDate)}</td>
+        <td style="padding:10px 14px;color:#6366f1;font-weight:700;font-size:13px;text-align:right;border-bottom:1px solid #f1f5f9">${formatCurrency(remaining)}</td>
       </tr>`;
     }).join('');
 
-    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${person.name} - Dues Statement</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',Arial,sans-serif;background:#fff;color:#1e293b}
-  .hdr{background:#6366f1;color:#fff;padding:24px 40px;display:flex;justify-content:space-between;align-items:center}
-  .hdr h1{font-size:28px;font-weight:700}
-  .hdr span{font-size:13px;opacity:.85}
-  .body{padding:32px 40px}
-  .meta{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px}
-  .meta h2{font-size:20px;font-weight:700}
-  .meta p{font-size:12px;color:#64748b;margin-top:4px}
-  .mr{text-align:right}
-  .mr .lbl{font-size:12px;color:#64748b}
-  .mr .val{font-size:18px;font-weight:700;color:#6366f1}
-  hr{border:none;border-top:1px solid #e2e8f0;margin-bottom:20px}
-  table{width:100%;border-collapse:collapse}
-  thead tr{background:#f1f5f9}
-  thead th{padding:10px 14px;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;text-align:left}
-  thead th:last-child{text-align:right}
-  tbody td:last-child{text-align:right}
-  .sum{margin-top:24px;background:#6366f1;border-radius:10px;padding:16px 20px;display:flex;justify-content:space-between;color:#fff}
-  .sum span{font-size:15px;font-weight:700}
-  .ftr{margin-top:40px;padding:14px 40px;background:#f1f5f9;display:flex;justify-content:space-between}
-  .ftr p{font-size:11px;color:#64748b;font-style:italic}
-  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-</style></head><body>
-<div class="hdr"><h1>E-Tracker</h1><span>Split &amp; Dues Statement</span></div>
-<div class="body">
-  <div class="meta">
-    <div><h2>${person.name}'s Outstanding Dues</h2><p>Generated on: ${date}</p></div>
-    <div class="mr"><p class="lbl">Total Outstanding</p><p class="val">${formatCurrency(totalOwed)}</p></div>
-  </div>
-  <hr/>
-  <table><thead><tr><th>Expense</th><th>Date</th><th>Amount Due</th></tr></thead><tbody>${rows}</tbody></table>
-  <div class="sum"><span>Total to Receive</span><span>${formatCurrency(totalOwed)}</span></div>
-</div>
-<div class="ftr"><p>Made by Jay</p><p>&copy; 2026 E-Tracker. All rights reserved.</p></div>
-</body></html>`;
+    // Build an off-screen div with the styled content
+    const container = document.createElement('div');
+    container.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:794px;background:#fff;font-family:Arial,sans-serif;';
+    container.innerHTML = `
+      <div style="background:#6366f1;color:#fff;padding:24px 40px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:26px;font-weight:700">E-Tracker</span>
+        <span style="font-size:12px;opacity:.85">Split &amp; Dues Statement</span>
+      </div>
+      <div style="padding:30px 40px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
+          <div>
+            <div style="font-size:18px;font-weight:700;color:#1e293b">${person.name}'s Outstanding Dues</div>
+            <div style="font-size:12px;color:#64748b;margin-top:4px">Generated on: ${date}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:11px;color:#64748b">Total Outstanding</div>
+            <div style="font-size:20px;font-weight:700;color:#6366f1">${formatCurrency(totalOwed)}</div>
+          </div>
+        </div>
+        <div style="border-top:1px solid #e2e8f0;margin-bottom:16px"></div>
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="background:#f1f5f9">
+              <th style="padding:10px 14px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;text-align:left">Expense</th>
+              <th style="padding:10px 14px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;text-align:left">Date</th>
+              <th style="padding:10px 14px;font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;text-align:right">Amount Due</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div style="margin-top:20px;background:#6366f1;border-radius:10px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center">
+          <span style="color:#fff;font-size:14px;font-weight:700">Total to Receive</span>
+          <span style="color:#fff;font-size:14px;font-weight:700">${formatCurrency(totalOwed)}</span>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding:12px 40px;background:#f1f5f9;display:flex;justify-content:space-between">
+        <span style="font-size:10px;color:#64748b;font-style:italic">Made by Jay</span>
+        <span style="font-size:10px;color:#64748b;font-style:italic">&copy; 2026 E-Tracker. All rights reserved.</span>
+      </div>`;
+    document.body.appendChild(container);
 
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const win = window.open(url, '_blank');
-    if (win) {
-      win.focus();
-      setTimeout(() => { win.print(); URL.revokeObjectURL(url); }, 800);
-    } else {
-      // Fallback for browsers that block popups (common on mobile)
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${person.name}_dues_statement.html`;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    try {
+      const canvas = await html2canvas(container, { scale: 2, useCORS: true, backgroundColor: '#fff' });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const imgH = (canvas.height * pageW) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pageW, Math.min(imgH, pageH));
+      pdf.save(`${person.name}_dues_statement.pdf`);
+    } finally {
+      document.body.removeChild(container);
+      setPdfLoading(false);
     }
   };
 
@@ -227,8 +231,10 @@ export default function SettleUpModal({ person, onClose }) {
             className="btn btn-ghost"
             style={{ display: 'flex', alignItems: 'center', gap: 6 }}
             onClick={downloadPDF}
+            disabled={pdfLoading}
           >
-            <Download size={15} /> Download PDF
+            {pdfLoading ? <Loader size={15} className="spin" /> : <Download size={15} />}
+            {pdfLoading ? 'Generating...' : 'Download PDF'}
           </button>
           <button
             className="btn btn-primary"

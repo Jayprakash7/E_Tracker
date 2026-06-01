@@ -859,6 +859,8 @@ select.form-input { cursor: pointer; }
 .dash-month-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 .dash-month-label { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 6px; min-width: 120px; justify-content: center; }
 .dash-month-badge { font-size: 10px; font-weight: 600; background: var(--primary-light); color: var(--primary); padding: 1px 7px; border-radius: 20px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 0.8s linear infinite; }
 .splits-summary-amount { font-size: 26px; font-weight: 700; color: var(--text); margin-top: 2px; }
 .splits-people-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .splits-person-pill:last-child:nth-child(odd) { grid-column: 1 / -1; }
