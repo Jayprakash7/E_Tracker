@@ -231,6 +231,7 @@ export default function SplitsPage() {
 
       {/* Tab switcher */}
       <div className="splits-tabs">
+        <div className={`splits-tab-slider ${activeTab === 'history' ? 'splits-tab-slider--right' : ''}`} />
         <button
           className={`splits-tab ${activeTab === 'outstanding' ? 'splits-tab--active' : ''}`}
           onClick={() => setActiveTab('outstanding')}
