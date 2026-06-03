@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, X, Divide } from 'lucide-react';
+import { Plus, X, Divide, UserX } from 'lucide-react';
 import { useSplit } from '../context/SplitContext';
 
 export default function SplitSection({ totalAmount, onSplitChange }) {
@@ -7,6 +7,7 @@ export default function SplitSection({ totalAmount, onSplitChange }) {
 
   const [selected, setSelected] = useState([]);       // array of personId
   const [amounts, setAmounts]   = useState({});        // { personId: string }
+  const [excludeSelf, setExcludeSelf] = useState(false); // true = I paid for them, not included
   const [newName, setNewName]   = useState('');
   const [showInput, setShowInput] = useState(false);
 
@@ -45,7 +46,10 @@ export default function SplitSection({ totalAmount, onSplitChange }) {
 
   const splitEqually = () => {
     if (selected.length === 0 || total <= 0) return;
-    const perPerson = Math.floor((total / (selected.length + 1)) * 100) / 100;
+    // If excludeSelf: split full amount among selected only
+    // If not: split among selected + yourself
+    const divisor = excludeSelf ? selected.length : selected.length + 1;
+    const perPerson = Math.floor((total / divisor) * 100) / 100;
     const newAmts = {};
     selected.forEach(pid => { newAmts[pid] = String(perPerson); });
     setAmounts(newAmts);
@@ -63,7 +67,7 @@ export default function SplitSection({ totalAmount, onSplitChange }) {
   };
 
   const totalSplit = selected.reduce((t, pid) => t + (parseFloat(amounts[pid]) || 0), 0);
-  const yourShare  = Math.max(0, total - totalSplit);
+  const yourShare  = excludeSelf ? 0 : Math.max(0, total - totalSplit);
   const isOver     = totalSplit > total;
 
   return (
@@ -71,14 +75,37 @@ export default function SplitSection({ totalAmount, onSplitChange }) {
       {/* Header */}
       <div className="split-section-header">
         <p className="split-label">Split with</p>
-        <button
-          type="button"
-          className="btn-split-equal"
-          onClick={splitEqually}
-          disabled={selected.length === 0 || !total}
-        >
-          <Divide size={13} /> Equal split
-        </button>
+        <div className="split-header-actions">
+          <button
+            type="button"
+            className={`btn-exclude-self ${excludeSelf ? 'btn-exclude-self--active' : ''}`}
+            onClick={() => {
+              const next = !excludeSelf;
+              setExcludeSelf(next);
+              // Re-run equal split if amounts already set
+              if (selected.length > 0 && total > 0) {
+                const divisor = next ? selected.length : selected.length + 1;
+                const perPerson = Math.floor((total / divisor) * 100) / 100;
+                const newAmts = {};
+                selected.forEach(pid => { newAmts[pid] = String(perPerson); });
+                setAmounts(newAmts);
+                notify(selected, newAmts);
+              }
+            }}
+            title={excludeSelf ? 'Click to include yourself in split' : 'Click if you paid for others and are not part of the split'}
+          >
+            <UserX size={13} />
+            {excludeSelf ? 'Not included' : 'Include me'}
+          </button>
+          <button
+            type="button"
+            className="btn-split-equal"
+            onClick={splitEqually}
+            disabled={selected.length === 0 || !total}
+          >
+            <Divide size={13} /> Equal split
+          </button>
+        </div>
       </div>
 
       {/* People chips */}
@@ -165,10 +192,17 @@ export default function SplitSection({ totalAmount, onSplitChange }) {
               <span>Others total</span>
               <span className={isOver ? 'split-sum-over' : ''}>₹{totalSplit.toFixed(2)}</span>
             </div>
-            <div className="split-summary-row split-summary-row--you">
-              <span>You pay</span>
-              <span>₹{yourShare.toFixed(2)}</span>
-            </div>
+            {excludeSelf ? (
+              <div className="split-summary-row split-summary-row--excluded">
+                <span>Your share</span>
+                <span className="split-excluded-label">Not included ✓</span>
+              </div>
+            ) : (
+              <div className="split-summary-row split-summary-row--you">
+                <span>You pay</span>
+                <span>₹{yourShare.toFixed(2)}</span>
+              </div>
+            )}
             {isOver && (
               <p className="split-error-inline">⚠ Split amounts exceed total</p>
             )}
