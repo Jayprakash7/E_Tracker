@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
 import { SplitProvider } from './context/SplitContext';
+import { FundsProvider } from './context/FundsContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Dashboard from './components/Dashboard';
@@ -10,6 +11,7 @@ import ExpenseList from './components/ExpenseList';
 import Reports from './components/Reports';
 import ManageCategories from './components/ManageCategories';
 import SplitsPage from './components/SplitsPage';
+import FundsPage from './components/FundsPage';
 import LoginPage from './components/LoginPage';
 
 function AppContent() {
@@ -24,19 +26,22 @@ function AppContent() {
   return (
     <AppProvider key={currentUser.id} userId={currentUser.id}>
       <SplitProvider key={currentUser.id} userId={currentUser.id}>
-        <div className="app-layout">
-          <Navbar />
-          <main className="main-content">
-            <Routes>
-              <Route path="/"           element={<Dashboard />} />
-              <Route path="/add"        element={<AddExpense />} />
-              <Route path="/expenses"   element={<ExpenseList />} />
-              <Route path="/reports"    element={<Reports />} />
-              <Route path="/categories" element={<ManageCategories />} />
-              <Route path="/splits"     element={<SplitsPage />} />
-            </Routes>
-          </main>
-        </div>
+        <FundsProvider key={currentUser.id} userId={currentUser.id}>
+          <div className="app-layout">
+            <Navbar />
+            <main className="main-content">
+              <Routes>
+                <Route path="/"           element={<Dashboard />} />
+                <Route path="/add"        element={<AddExpense />} />
+                <Route path="/expenses"   element={<ExpenseList />} />
+                <Route path="/reports"    element={<Reports />} />
+                <Route path="/categories" element={<ManageCategories />} />
+                <Route path="/splits"     element={<SplitsPage />} />
+                <Route path="/funds"      element={<FundsPage />} />
+              </Routes>
+            </main>
+          </div>
+        </FundsProvider>
       </SplitProvider>
     </AppProvider>
   );

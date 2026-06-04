@@ -196,6 +196,8 @@ a { text-decoration: none; color: inherit; }
 .icon-btn--edit:hover { background: var(--primary-light); }
 .icon-btn--delete { color: var(--danger); }
 .icon-btn--delete:hover { background: var(--danger-bg); }
+.icon-btn--danger { color: var(--danger); cursor: pointer; }
+.icon-btn--danger:hover { background: var(--danger-bg); }
 .icon-btn--logout { color: var(--text-secondary); }
 .icon-btn--logout:hover { background: var(--danger-bg); color: var(--danger); }
 
@@ -1102,6 +1104,136 @@ select.form-input { cursor: pointer; }
 /*  User Avatar  */
 .user-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; flex-shrink: 0; }
 .user-avatar--sm { width: 32px; height: 32px; font-size: 12px; }
+
+/* ═══════════════════════════════════════════════
+   FUNDS PAGE
+═══════════════════════════════════════════════ */
+.fund-form-card { margin-bottom: 20px; padding: 18px 20px; }
+.fund-form-header { display: flex; align-items: center; justify-content: space-between; font-weight: 600; font-size: 15px; margin-bottom: 14px; color: var(--text); }
+.fund-form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.fund-form-field { display: flex; flex-direction: column; gap: 4px; }
+.fund-form-field--wide { flex: 2; }
+.fund-form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+
+.fund-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.fund-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 16px 18px; cursor: pointer; transition: all var(--transition); }
+.fund-card:hover { border-color: var(--primary); box-shadow: 0 4px 16px rgba(99,102,241,0.1); }
+.fund-card--active { border-color: var(--primary); background: var(--primary-light); }
+.fund-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px; }
+.fund-card-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.fund-card-rename { display: flex; align-items: center; gap: 4px; flex: 1; }
+.fund-rename-input { flex: 1; padding: 4px 8px; border-radius: 6px; border: 1.5px solid var(--primary); background: var(--bg); color: var(--text); font-size: 14px; font-weight: 600; outline: none; }
+.fund-card-name { font-weight: 700; font-size: 15px; color: var(--text); }
+.fund-card-amounts { display: flex; gap: 24px; margin-bottom: 10px; }
+.fund-card-stat { display: flex; flex-direction: column; gap: 2px; }
+.fund-card-stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+.fund-card-stat-value { font-size: 16px; font-weight: 700; color: var(--text); }
+.fund-bal--positive { color: #16a34a !important; }
+.fund-bal--negative { color: #dc2626 !important; }
+.fund-card-toggle { font-size: 12px; color: var(--primary); display: flex; align-items: center; gap: 4px; }
+.text-success { color: #16a34a; }
+.text-danger  { color: #dc2626; }
+
+.fund-tx-panel { padding: 20px; }
+.fund-tx-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.fund-tx-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.fund-tx-subtitle { font-size: 13px; color: var(--text-secondary); }
+.fund-tx-actions { display: flex; gap: 8px; align-items: center; }
+.fund-pdf-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+
+.fund-tx-form { background: var(--bg); border-radius: 10px; border: 1px solid var(--border); padding: 16px; margin-bottom: 20px; }
+.fund-tx-type-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
+.fund-type-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--card); color: var(--text-secondary); cursor: pointer; transition: all var(--transition); }
+.fund-type-btn--debit  { background: #fef2f2; border-color: #fca5a5; color: #dc2626; }
+.fund-type-btn--credit { background: #f0fdf4; border-color: #86efac; color: #16a34a; }
+[data-theme="dark"] .fund-type-btn--debit  { background: rgba(220,38,38,0.15); border-color: rgba(252,165,165,0.4); color: #f87171; }
+[data-theme="dark"] .fund-type-btn--credit { background: rgba(22,163,74,0.15); border-color: rgba(134,239,172,0.4); color: #4ade80; }
+
+.fund-print-area { background: #fff; border-radius: 10px; padding: 24px; margin-top: 8px; }
+
+/* PDF Hero header */
+.fund-pdf-hero { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 16px; border-bottom: 2px solid #6366f1; margin-bottom: 20px; }
+.fund-pdf-fund-name { font-size: 22px; font-weight: 800; color: #1e1b4b; }
+.fund-pdf-subtitle  { font-size: 13px; color: #6b7280; margin-top: 2px; }
+.fund-pdf-date      { font-size: 12px; color: #6b7280; text-align: right; }
+
+/* Summary cards */
+.fund-pdf-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+.fund-pdf-summary-card { border-radius: 8px; padding: 12px 14px; }
+.fund-pdf-summary-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 4px; }
+.fund-pdf-summary-value { font-size: 16px; font-weight: 800; }
+.fund-pdf-summary-card--open    { background: #f0f9ff; } .fund-pdf-summary-card--open    .fund-pdf-summary-label { color: #0369a1; } .fund-pdf-summary-card--open    .fund-pdf-summary-value { color: #0c4a6e; }
+.fund-pdf-summary-card--debit   { background: #fef2f2; } .fund-pdf-summary-card--debit   .fund-pdf-summary-label { color: #b91c1c; } .fund-pdf-summary-card--debit   .fund-pdf-summary-value { color: #7f1d1d; }
+.fund-pdf-summary-card--credit  { background: #f0fdf4; } .fund-pdf-summary-card--credit  .fund-pdf-summary-label { color: #15803d; } .fund-pdf-summary-card--credit  .fund-pdf-summary-value { color: #14532d; }
+.fund-pdf-summary-card--balance { background: #f0fdf4; } .fund-pdf-summary-card--balance .fund-pdf-summary-label { color: #15803d; } .fund-pdf-summary-card--balance .fund-pdf-summary-value { color: #14532d; }
+.fund-pdf-summary-card--neg     { background: #fef2f2; } .fund-pdf-summary-card--neg     .fund-pdf-summary-label { color: #b91c1c; } .fund-pdf-summary-card--neg     .fund-pdf-summary-value { color: #7f1d1d; }
+
+/* Breakdown row (sub-row under debit with split) */
+.fund-breakdown-row td { background: #fafafa !important; border-bottom: 1px solid #e5e7eb; padding: 6px 10px 10px; }
+.fund-breakdown-cells { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.fund-breakdown-cell  { display: flex; flex-direction: column; gap: 1px; background: #fff; border-radius: 6px; padding: 6px 12px; border: 1px solid #e5e7eb; min-width: 110px; }
+.fund-breakdown-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+.fund-breakdown-val   { font-size: 14px; font-weight: 700; }
+.fund-breakdown-cell--total .fund-breakdown-label { color: #6b7280; } .fund-breakdown-cell--total .fund-breakdown-val { color: #111827; }
+.fund-breakdown-cell--self  .fund-breakdown-label { color: #7c3aed; } .fund-breakdown-cell--self  .fund-breakdown-val { color: #5b21b6; }
+.fund-breakdown-cell--fund  .fund-breakdown-label { color: #b91c1c; } .fund-breakdown-cell--fund  .fund-breakdown-val { color: #7f1d1d; }
+.fund-breakdown-arrow, .fund-breakdown-plus { font-size: 16px; color: #9ca3af; font-weight: 700; }
+.fund-empty-tx { text-align: center; padding: 30px; color: var(--text-secondary); font-size: 14px; }
+
+.fund-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.fund-table th { background: #1e1b4b; color: #e0e7ff; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 14px; text-align: left; }
+.fund-table th.num-col { text-align: right; }
+.fund-table td { padding: 11px 14px; border-bottom: 1px solid #e5e7eb; color: #111827; vertical-align: middle; }
+.fund-table-opening td, .fund-table-closing td { background: #eef2ff; color: #3730a3; font-size: 13px; }
+.num-col { text-align: right; font-variant-numeric: tabular-nums; }
+.fund-debit  { color: #dc2626; font-weight: 700; }
+.fund-credit { color: #16a34a; font-weight: 700; }
+.fund-running-wrap { position: relative; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-weight: 700; color: #111827; }
+.fund-del-btn { opacity: 0; background: none; border: none; color: #ef4444; cursor: pointer; padding: 2px; display: flex; align-items: center; transition: opacity 0.15s; flex-shrink: 0; }
+.fund-table-row:hover .fund-del-btn { opacity: 1; }
+.fund-td-date { white-space: nowrap; color: #6b7280; font-size: 12px; }
+.fund-td-desc-wrap { display: flex; flex-direction: column; gap: 2px; }
+.fund-td-note-inline { font-size: 11px; color: #6b7280; font-weight: 400; }
+.fund-table-row--debit  td { background: #fffbfb; }
+.fund-table-row--credit td { background: #f0fdf4; }
+.fund-split-info { display: flex; align-items: center; gap: 5px; margin-top: 3px; flex-wrap: wrap; }
+.fund-split-total { font-size: 11px; color: var(--text-secondary); }
+.fund-split-sep   { font-size: 11px; color: var(--text-secondary); }
+.fund-split-fund  { font-size: 11px; font-weight: 600; color: #dc2626; }
+.fund-split-self  { font-size: 11px; font-weight: 600; color: #7c3aed; }
+.fund-label-hint  { font-size: 11px; font-weight: 400; color: var(--text-secondary); margin-left: 4px; }
+.fund-field-hint  { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+.fund-deduction-preview { margin: 10px 0 6px; border-radius: 10px; border: 1.5px solid var(--border); overflow: hidden; }
+.fund-deduction-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; font-size: 13px; color: var(--text); background: var(--bg); border-bottom: 1px solid var(--border); }
+.fund-deduction-row:last-child { border-bottom: none; }
+.fund-deduction-row--self { color: #7c3aed; background: rgba(124,58,237,0.05); }
+.fund-deduction-row--fund { color: #dc2626; background: rgba(220,38,38,0.06); font-weight: 600; }
+[data-theme="dark"] .fund-deduction-row--self { background: rgba(167,139,250,0.1); color: #a78bfa; }
+[data-theme="dark"] .fund-deduction-row--fund { background: rgba(248,113,113,0.1); color: #f87171; }
+
+/* Card-style preview (new) */
+.fund-split-toggle-wrap { margin: 2px 0; }
+.fund-split-toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text); user-select: none; }
+.fund-split-toggle-box { width: 17px; height: 17px; border-radius: 4px; border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; background: transparent; flex-shrink: 0; transition: background 0.15s; }
+.fund-split-toggle-box--on { background: var(--primary); }
+
+/* Card-style preview (new) */
+.fund-deduction-preview--cards { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border: none; background: transparent; overflow: visible; padding: 2px 0; }
+.fund-deduction-card { display: flex; flex-direction: column; gap: 3px; border-radius: 10px; padding: 10px 16px; border: 1.5px solid var(--border); background: var(--bg); min-width: 120px; }
+.fund-deduction-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+.fund-deduction-card-val   { font-size: 15px; font-weight: 700; }
+.fund-deduction-card--total .fund-deduction-card-label { color: var(--text-secondary); }
+.fund-deduction-card--total .fund-deduction-card-val   { color: var(--text); }
+.fund-deduction-card--self  .fund-deduction-card-label { color: #7c3aed; }
+.fund-deduction-card--self  .fund-deduction-card-val   { color: #5b21b6; }
+.fund-deduction-card--fund  .fund-deduction-card-label { color: #b91c1c; }
+.fund-deduction-card--fund  .fund-deduction-card-val   { color: #dc2626; }
+.fund-deduction-arrow, .fund-deduction-plus { font-size: 18px; color: var(--text-secondary); font-weight: 700; }
+[data-theme="dark"] .fund-deduction-card--self .fund-deduction-card-label { color: #a78bfa; }
+[data-theme="dark"] .fund-deduction-card--self .fund-deduction-card-val   { color: #c4b5fd; }
+[data-theme="dark"] .fund-deduction-card--fund .fund-deduction-card-label { color: #f87171; }
+[data-theme="dark"] .fund-deduction-card--fund .fund-deduction-card-val   { color: #fca5a5; }
+@media print { .no-print { display: none !important; } }
 
 /*  Tap targets  */
 html { overflow-x: hidden; -webkit-text-size-adjust: 100%; }

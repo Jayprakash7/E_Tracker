@@ -12,6 +12,7 @@ import {
   Users,
   Moon,
   Sun,
+  Landmark,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -22,6 +23,7 @@ const DESKTOP_NAV = [
   { to: '/add',        label: 'Add Expense', icon: PlusCircle },
   { to: '/expenses',   label: 'Expenses',    icon: List },
   { to: '/splits',     label: 'Splits',      icon: Users },
+  { to: '/funds',      label: 'Funds',       icon: Landmark },
   { to: '/reports',    label: 'Reports',     icon: BarChart2 },
   { to: '/categories', label: 'Categories',  icon: Tag },
 ];
@@ -31,8 +33,8 @@ const MOBILE_NAV = [
   { to: '/',         label: 'Home',      icon: LayoutDashboard },
   { to: '/expenses', label: 'Expenses',  icon: List },
   { to: '/splits',   label: 'Splits',    icon: Users },
+  { to: '/funds',    label: 'Funds',     icon: Landmark },
   { to: '/reports',  label: 'Reports',   icon: BarChart2 },
-  { to: '/categories', label: 'More',   icon: Tag },
 ];
 
 export default function Navbar() {
