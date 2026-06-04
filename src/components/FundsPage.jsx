@@ -114,7 +114,28 @@ export default function FundsPage() {
     if (!printRef.current || !activeFund) return;
     setPdfLoading(true);
     try {
-      const canvas = await html2canvas(printRef.current, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' });
+      const el = printRef.current;
+
+      // Force desktop width so PDF always looks clean regardless of device
+      const prevStyle = el.getAttribute('style') || '';
+      el.style.width        = '900px';
+      el.style.minWidth     = '900px';
+      el.style.position     = 'relative';
+      el.style.left         = '0';
+      el.style.top          = '0';
+      el.style.transform    = 'none';
+
+      const canvas = await html2canvas(el, {
+        scale: 1.5,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        width: 900,
+        windowWidth: 1200,
+      });
+
+      // Restore original styles
+      el.setAttribute('style', prevStyle);
+
       const imgData = canvas.toDataURL('image/jpeg', 0.85);
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
       const w = pdf.internal.pageSize.getWidth();
@@ -127,6 +148,10 @@ export default function FundsPage() {
         y += pageH;
       }
       pdf.save(`${activeFund.name.replace(/\s+/g, '_')}_fund_report.pdf`);
+    } catch(e) {
+      // restore style on error too
+      if (printRef.current) printRef.current.setAttribute('style', printRef.current._prevStyle || '');
+      throw e;
     } finally {
       setPdfLoading(false);
     }
@@ -427,6 +452,26 @@ export default function FundsPage() {
                 <div className="fund-pdf-summary-value">{fmt(balance)}</div>
               </div>
             </div>
+
+            {/* ── Section Divider ── */}
+            {txList.length > 0 && (
+              <div className="fund-history-header">
+                <div className="fund-history-title">
+                  <span className="fund-history-icon">📋</span>
+                  Transaction History
+                </div>
+                <div className="fund-history-meta">
+                  {(() => {
+                    const debitCount  = txList.filter(t => t.type === 'debit').length;
+                    const creditCount = txList.filter(t => t.type === 'credit').length;
+                    const parts = [];
+                    if (debitCount  > 0) parts.push(`${debitCount} debit${debitCount  !== 1 ? 's' : ''}`);
+                    if (creditCount > 0) parts.push(`${creditCount} credit${creditCount !== 1 ? 's' : ''}`);
+                    return `${txList.length} transaction${txList.length !== 1 ? 's' : ''} · ${parts.join(' · ')}`;
+                  })()}
+                </div>
+              </div>
+            )}
 
             {txList.length === 0 ? (
               <div className="fund-empty-tx">No transactions yet.</div>

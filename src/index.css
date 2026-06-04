@@ -1180,6 +1180,11 @@ select.form-input { cursor: pointer; }
 .fund-breakdown-arrow, .fund-breakdown-plus { font-size: 16px; color: #9ca3af; font-weight: 700; }
 .fund-empty-tx { text-align: center; padding: 30px; color: var(--text-secondary); font-size: 14px; }
 
+.fund-history-header { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 12px; padding: 10px 14px; background: #f5f3ff; border-radius: 8px; border-left: 4px solid #6366f1; }
+.fund-history-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: #1e1b4b; }
+.fund-history-icon  { font-size: 16px; }
+.fund-history-meta  { font-size: 12px; color: #6b7280; font-weight: 500; }
+
 .fund-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .fund-table th { background: #1e1b4b; color: #e0e7ff; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 14px; text-align: left; }
 .fund-table th.num-col { text-align: right; }
