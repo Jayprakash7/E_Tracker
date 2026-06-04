@@ -1319,6 +1319,30 @@ button, a, select, input[type="checkbox"], input[type="radio"] { -webkit-tap-hig
   .splits-pill-settle    { font-size: 10px; white-space: nowrap; flex-shrink: 0; }
   .you-owe-row { flex-direction: column; } .you-owe-right { align-items: flex-start; }
   .split-card-top { flex-direction: column; gap: 8px; }
+
+  /* ── Funds page mobile ── */
+  .fund-cards-grid { grid-template-columns: 1fr; gap: 10px; }
+  .fund-tx-header { flex-direction: column; align-items: stretch; gap: 8px; }
+  .fund-tx-actions { justify-content: stretch; }
+  .fund-tx-actions .btn { flex: 1; justify-content: center; }
+  .fund-form-row { grid-template-columns: 1fr; gap: 10px; }
+  .fund-form-field--wide { flex: unset; }
+  .fund-form-actions { flex-direction: column; gap: 8px; }
+  .fund-form-actions .btn { width: 100%; justify-content: center; }
+  .fund-tx-form { padding: 12px; }
+  .fund-tx-panel { padding: 14px; }
+  .fund-print-area { padding: 14px 10px; overflow-x: auto; }
+  .fund-pdf-summary { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fund-pdf-hero { flex-direction: column; gap: 6px; }
+  .fund-pdf-date { text-align: left; }
+  .fund-table { font-size: 12px; min-width: 480px; }
+  .fund-table th, .fund-table td { padding: 8px 8px; }
+  .fund-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .fund-deduction-preview--cards { gap: 6px; }
+  .fund-deduction-card { padding: 8px 10px; min-width: 90px; }
+  .fund-deduction-card-val { font-size: 13px; }
+  .fund-breakdown-cells { gap: 5px; }
+  .fund-breakdown-cell { min-width: 80px; padding: 5px 8px; }
 }
 @media (max-width: 400px) {
   .splits-people-row { grid-template-columns: 1fr 1fr; }

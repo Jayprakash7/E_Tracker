@@ -155,7 +155,7 @@ export default function FundsPage() {
             <div className="fund-form-field">
               <label className="form-label">Fund name *</label>
               <input className={`form-input ${fundErrors.name ? 'form-input--error' : ''}`}
-                placeholder="e.g. Papa's Money"
+                placeholder="Enter fund name"
                 value={fundForm.name}
                 onChange={e => setFundForm(p => ({ ...p, name: e.target.value }))}
               />
@@ -164,7 +164,7 @@ export default function FundsPage() {
             <div className="fund-form-field">
               <label className="form-label">Opening balance (₹) *</label>
               <input className={`form-input ${fundErrors.amount ? 'form-input--error' : ''}`}
-                type="number" min="0" placeholder="60000"
+                type="number" min="0" placeholder="Enter opening amount"
                 value={fundForm.initialAmount}
                 onChange={e => setFundForm(p => ({ ...p, initialAmount: e.target.value }))}
               />
@@ -293,7 +293,7 @@ export default function FundsPage() {
                 <div className="fund-form-field fund-form-field--wide">
                   <label className="form-label">Description *</label>
                   <input className={`form-input ${txErrors.description ? 'form-input--error' : ''}`}
-                    placeholder="e.g. Brother's college fee"
+                    placeholder="Enter description"
                     value={txForm.description}
                     onChange={e => setTxForm(p => ({ ...p, description: e.target.value }))}
                   />
@@ -302,7 +302,7 @@ export default function FundsPage() {
                 <div className="fund-form-field">
                   <label className="form-label">Total expense (₹) *</label>
                   <input className={`form-input ${txErrors.totalExpense ? 'form-input--error' : ''}`}
-                    type="number" min="0" placeholder="e.g. 34500"
+                    type="number" min="0" placeholder="Enter total amount"
                     value={txForm.totalExpense}
                     onChange={e => {
                       const total = parseFloat(e.target.value) || 0;
@@ -331,7 +331,7 @@ export default function FundsPage() {
                   <div className="fund-form-field">
                     <label className="form-label">Paid by me (₹) <span className="fund-label-hint">optional</span></label>
                     <input className={`form-input ${txErrors.selfAmount ? 'form-input--error' : ''}`}
-                      type="number" min="0" placeholder="e.g. 20000"
+                      type="number" min="0" placeholder="Enter your contribution"
                       value={txForm.selfAmount}
                       onChange={e => {
                         const self = parseFloat(e.target.value) || 0;
@@ -348,7 +348,7 @@ export default function FundsPage() {
                   <div className="fund-form-field">
                     <label className="form-label">From {activeFund?.name} (₹) <span className="fund-label-hint">auto-calculated</span></label>
                     <input className={`form-input ${txErrors.fundAmount ? 'form-input--error' : ''}`}
-                      type="number" min="0" placeholder="auto"
+                      type="number" min="0" placeholder="Auto-calculated"
                       value={txForm.fundAmount}
                       onChange={e => setTxForm(p => ({ ...p, fundAmount: e.target.value }))}
                     />
@@ -378,7 +378,7 @@ export default function FundsPage() {
               <div className="fund-form-field" style={{ marginTop: 4 }}>
                 <label className="form-label">Notes (optional)</label>
                 <input className="form-input"
-                  placeholder="e.g. Paid from fund money"
+                  placeholder="Add a note (optional)"
                   value={txForm.notes}
                   onChange={e => setTxForm(p => ({ ...p, notes: e.target.value }))}
                 />
@@ -431,6 +431,7 @@ export default function FundsPage() {
             {txList.length === 0 ? (
               <div className="fund-empty-tx">No transactions yet.</div>
             ) : (
+              <div className="fund-table-wrap">
               <table className="fund-table">
                 <thead>
                   <tr>
@@ -500,6 +501,7 @@ export default function FundsPage() {
                   </tr>
                 </tfoot>
               </table>
+              </div>
             )}
           </div>
         </div>
