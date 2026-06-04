@@ -147,7 +147,7 @@ export default function FundsPage() {
         pdf.addImage(imgData, 'JPEG', 0, -y, w, h);
         y += pageH;
       }
-      pdf.save(`${activeFund.name.replace(/\s+/g, '_')}_fund_report.pdf`);
+      pdf.save(`${activeFund.name}_report.pdf`);
     } catch(e) {
       // restore style on error too
       if (printRef.current) printRef.current.setAttribute('style', printRef.current._prevStyle || '');
