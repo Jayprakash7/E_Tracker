@@ -28,13 +28,14 @@ const DESKTOP_NAV = [
   { to: '/categories', label: 'Categories',  icon: Tag },
 ];
 
-// Mobile bottom nav — 5 key pages (FAB handles Add)
+// Mobile bottom nav — 6 key pages (FAB handles Add)
 const MOBILE_NAV = [
-  { to: '/',         label: 'Home',      icon: LayoutDashboard },
-  { to: '/expenses', label: 'Expenses',  icon: List },
-  { to: '/splits',   label: 'Splits',    icon: Users },
-  { to: '/funds',    label: 'Funds',     icon: Landmark },
-  { to: '/reports',  label: 'Reports',   icon: BarChart2 },
+  { to: '/',           label: 'Home',       icon: LayoutDashboard },
+  { to: '/expenses',   label: 'Expenses',   icon: List },
+  { to: '/splits',     label: 'Splits',     icon: Users },
+  { to: '/funds',      label: 'Funds',      icon: Landmark },
+  { to: '/reports',    label: 'Reports',    icon: BarChart2 },
+  { to: '/categories', label: 'Categories', icon: Tag },
 ];
 
 export default function Navbar() {
